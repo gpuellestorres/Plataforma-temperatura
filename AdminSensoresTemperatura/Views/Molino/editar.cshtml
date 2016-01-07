@@ -1,0 +1,116 @@
+﻿@model AdminSensoresTemperatura.Models.molinos
+@{
+    ViewBag.Title = "Editar Molino";
+}
+
+<div class="content-wrapper">
+    <div class="content">
+        <br class="xs-hidden">
+        <br class="xs-hidden">
+        <br class="xs-hidden">
+        <div class="row">
+            <h3 class="text-center">Editar Molino</h3>
+            <div class="col-sm-8 col-sm-offset-2">
+                <form action="@Url.Action("GuardarEditar", "Molino")" role="form" method="post" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <input type="text" name="nombreAnterior" id="nombreAnterior" placeholder="Nombre de molino" value="@Model.nombre" required hidden>
+                        <div class="form-group">
+                            <div id="divNombreNombre" class="form-group">
+                                <label class="control-label">Nombre de molino:</label>
+                                <input type="text" class="form-control" name="nombreMolino" id="nombreMolino" value="@Model.nombre" placeholder="Nombre de Usuario" required>
+                                <span id="spanInputNombre" class="glyphicon form-control-feedback"></span>
+                                <div id="mensajeErrorNombre" class="alert alert-danger hidden">
+                                    <strong>Error: </strong> ya existe un molino con este nombre
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">Planta a la que pertenece</label>
+                        <input name="plantaAnterior" id="plantaAnterior" value="@Model.nombre" hidden>
+                        <select class="form-control" name="planta" id="planta" required>
+                            @foreach (AdminSensoresTemperatura.Models.plantas planta in (List<AdminSensoresTemperatura.Models.plantas>)ViewData["plantas"])
+                        {
+                            if (Model.planta.Equals(planta.nombre))
+                            {
+                                <option value="@planta.nombre" selected>@planta.nombre</option>
+                            }
+                            else
+                            {
+                                <option value="@planta.nombre">@planta.nombre</option>
+                            }
+                        }
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">Valor de temperatura media para alarmas</label>
+                        <input type="number" name="temperaturaMedia" id="temperaturaMedia" value="@Model.alarmaMedia" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">Valor de temperatura alta para alarma</label>
+                        <input type="number" name="temperaturaAlta" id="temperatuaAlta" value="@Model.alarmaAlta" class="form-control" />
+                    </div>
+                    <div class="modal-footer">
+                        <a type="button" class="btn btn-default btn-lg" href="@Url.Action("todos","Molino")"><i class="glyphicon glyphicon-log-out"></i>&nbsp;Cancelar</a>
+                        <button type="submit" class="btn btn-primary btn-lg" id="btn-editar"><i class="glyphicon glyphicon-floppy-disk"></i>&nbsp;Guardar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts{
+    <script type="text/javascript">
+
+        $("#nombreMolino").change(function () {
+            verificarCampos();
+        });
+        
+        function verificarCampos() {
+            var habilitarBoton = true;
+
+            var nombreMolino = $("#nombreMolino").val();
+
+            $.ajax({
+                url: "/Molino/verificarMolino",
+                data: { "valor_molino": nombreMolino },
+
+                success: function (retorno) {
+
+                    console.log("¿Existe usuario? " + retorno);
+
+                    if (retorno == "false" || $("#nombreAnterior").val() == nombreMolino) {
+                        $("#divNombreNombre").removeClass(" has-error");
+                        $("#divNombreNombre").addClass(" has-feedback");
+                        $("#divNombreNombre").addClass(" has-success");
+                        $("#spanInputNombre").addClass("glyphicon-ok");
+                        $("#spanInputNombre").removeClass("glyphicon-remove");
+                        $("#mensajeErrorNombre").addClass("hidden");
+                    }
+                    else {
+
+                        habilitarBoton = false;
+
+                        $("#divNombreNombre").addClass(" has-error");
+                        $("#divNombreNombre").addClass(" has-feedback");
+                        $("#divNombreNombre").removeClass(" has-success");
+                        $("#spanInputNombre").addClass("glyphicon-remove");
+                        $("#spanInputNombre").removeClass("glyphicon-ok");
+                        $("#mensajeErrorNombre").removeClass("hidden");
+                    }
+
+                    if (habilitarBoton) {
+                        console.log("habilitando botón");
+                        $("#btn-editar").removeAttr("disabled");
+                    }
+                    else
+                    {
+                        console.log("deshabilitando botón");
+                        $("#btn-editar").attr("disabled", "disabled");
+                    }
+                }
+            });
+        }
+    </script>
+}
+

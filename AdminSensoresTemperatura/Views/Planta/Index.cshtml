@@ -1,0 +1,115 @@
+﻿@model List<AdminSensoresTemperatura.Models.plantas>
+@{
+    ViewBag.Title = "Todas las plantas del sistema";
+    WebGrid grid = new WebGrid(Model, rowsPerPage: 10);
+}
+
+<div class="content-wrapper">
+
+    @if (ViewBag.mensaje != null && ViewBag.mensaje.Equals("se usa"))
+    {
+        <div class="alert alert-danger alert-dismissable">
+            <button type="button" class="close" data-dismiss="alert"
+                    aria-hidden="true">
+                &times;
+            </button>
+            La planta no puede ser eliminada porque se está asociada a uno o más molinos del sistema
+        </div>
+    }
+    @if (ViewBag.mensaje != null && ViewBag.mensaje.Equals("agregado"))
+    {
+        <div class="alert alert-success alert-dismissable">
+            <button type="button" class="close" data-dismiss="alert"
+                    aria-hidden="true">
+                &times;
+            </button>
+            La planta ha sido agregada con éxito
+        </div>
+    }
+    @if (ViewBag.mensaje != null && ViewBag.mensaje.Equals("eliminado"))
+    {
+        <div class="alert alert-success alert-dismissable">
+            <button type="button" class="close" data-dismiss="alert"
+                    aria-hidden="true">
+                &times;
+            </button>
+            La planta ha sido eliminada con éxito
+        </div>
+    }
+    @if (ViewBag.mensaje != null && ViewBag.mensaje.Equals("modificado"))
+    {
+        <div class="alert alert-success alert-dismissable">
+            <button type="button" class="close" data-dismiss="alert"
+                    aria-hidden="true">
+                &times;
+            </button>
+            La planta ha sido editada con éxito
+        </div>
+    }
+
+    <br />
+    <div class="page-header">
+        <h2 class="text-center">Plantas del sistema</h2>
+    </div>
+
+    <div class="content">
+
+        <div class="table table-responsive">
+            @grid.GetHtml(
+            columns: grid.Columns(
+
+            grid.Column("nombre",
+            header: string.Format("Nombre de planta {0}", grid.SortColumn == "nombre" ? grid.SortDirection == SortDirection.Ascending ? "⇈" : "⇊" : ""), style: "text-muted"),
+
+            grid.Column("organizacion",
+            header: string.Format("Organización {0}", grid.SortColumn == "organizacion" ? grid.SortDirection == SortDirection.Ascending ? "⇈" : "⇊" : ""), style: "text-muted"),
+
+            grid.Column("",
+            header: "Editar",
+            format: @<text>
+                <a href="@Url.Action("Editar", "Planta" , new { nombre=item.nombre})"><span class='glyphicon glyphicon-edit text-primary'></span></a>
+            </text>),
+
+            grid.Column("",
+            header: "Eliminar",
+            format: @<text>
+                <a href="#" data-toggle="modal" data-target="#myModal" onclick="funcionDelete('@item.nombre')" title="Eliminar"><span class='glyphicon glyphicon-remove text-danger'></span></a>
+            </text>)
+           ), tableStyle: "table table-hover table-bordered table-striped", footerStyle: "pagination")
+
+        </div>
+        <div class="modal-footer">
+            <a href="@Url.Action("Nueva", "Planta")" type="button" class="btn btn-default"><i class="glyphicon glyphicon-plus-sign "></i>&nbsp;Nueva</a>
+        </div>
+
+        <!--Modal-->
+        <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                        <h4 class="modal-title" id="myModalLabel">¿Eliminar Planta?</h4>
+                    </div>
+                    <div class="modal-body">
+                        <h5 class="text-center" id="text-modal"></h5>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal"><i class="glyphicon glyphicon-remove"></i>Cancelar</button>
+                        <a href="" type="button" id="btn_delete" class="btn btn-primary"><i class="glyphicon glyphicon-ok"></i>Eliminar</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts{
+    <script type="text/javascript">
+        function funcionDelete(nombre) {
+            $("#text-modal").html("");
+            var cadena = "@Url.Action("eliminar", "Planta", new { nombre = "name" })";
+            cadena = cadena.replace("name", nombre);
+            $("#btn_delete").attr("href", cadena);
+            $("#text-modal").append("¿Estás seguro de que deseas eliminar <strong>" + nombre + "</strong> de Plantas?");
+        }
+    </script>
+}

@@ -1,0 +1,110 @@
+﻿@model AdminSensoresTemperatura.Models.infoAlertas
+@{
+    ViewBag.Title = "EditarAlerta";
+}
+
+<div class="content-wrapper">
+    <div class="content">
+        <br class="xs-hidden">
+        <br class="xs-hidden">
+        <br class="xs-hidden">
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <h3>Editar receptor de alertas</h3>
+                <br />
+                <form role="form" method="post" action="@Url.Action("MetodoEditarAlerta", "Organizacion")" enctype="multipart/form-data">
+                    <input type="email" name="correoAnterior" id="correoAnterior"
+                           placeholder="Correo Electrónico" value="@Model.correo" required hidden>
+                    <div class="form-group">
+                        <label class="control-label">Receptor de la alerta:</label>
+                        <input class="form-control" placeholder="Nombre del receptor de la alerta"
+                               name="nombre" value="@Model.nombre" type="text" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">Correo Electrónico:</label>
+                        <div id="divCorreo" class="form-group">
+                            <input type="email" class="form-control" name="correo" id="correo"
+                                   value="@Model.correo" placeholder="Correo Electrónico" required>
+                            <span id="spanInputCorreo" class="glyphicon form-control-feedback"></span>
+                            <div id="mensajeErrorCorreo" class="alert alert-danger hidden">
+                                <strong>Error: </strong> ya existe un receptor de alertas con este correo electrónico para esta organización
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">Celular:</label>
+                        <input class="form-control" value="@Model.celular" placeholder="Celular (8 números)"
+                               name="celular" type="text" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">Organización:</label>
+                        <input name="organizacion" value="@Model.organizacion" class="form-control" readonly />
+                    </div>
+                    <div class="modal-footer">
+                        <a href="@Url.Action("alertas", "Organizacion", new { organizacion=@Model.organizacion })" class="btn btn-lg btn-default">Cancelar</a>
+                        <button type="submit" id="boton" class="btn btn-lg btn-primary">Guardar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script type="text/javascript">
+
+    $("#correo").change(function () {
+        verificarCampos();
+    });
+
+    function verificarCampos() {
+        var habilitarBoton = true;
+
+        var nombre = $("#correo").val();
+        var anterior = $("#correoAnterior").val();
+        var organizacion="@Model.organizacion";
+
+        console.log("correo: " + nombre + " - organizacion:" + organizacion);
+
+        $.ajax({
+            url: "/Organizacion/existeAlertaCorreoEnOrganizacion",
+            data: { "correo": nombre, "organizacion": organizacion },
+
+            success: function (retorno) {
+
+                console.log("Retorno: " + retorno);
+
+                if (retorno == "false" || nombre==anterior) {
+                    $("#divCorreo").removeClass(" has-error");
+                    $("#divCorreo").addClass(" has-feedback");
+                    $("#divCorreo").addClass(" has-success");
+                    $("#spanInputCorreo").addClass("glyphicon-ok");
+                    $("#spanInputCorreo").removeClass("glyphicon-remove");
+                    $("#mensajeErrorCorreo").addClass("hidden");
+                }
+                else {
+
+                    habilitarBoton = false;
+
+                    $("#divCorreo").addClass(" has-error");
+                    $("#divCorreo").addClass(" has-feedback");
+                    $("#divCorreo").removeClass(" has-success");
+                    $("#spanInputCorreo").addClass("glyphicon-remove");
+                    $("#spanInputCorreo").removeClass("glyphicon-ok");
+                    $("#mensajeErrorCorreo").removeClass("hidden");
+                }
+
+                if (habilitarBoton) {
+                    console.log("habilitando botón");
+                    $("#boton").removeAttr("disabled");
+                }
+                else {
+                    console.log("deshabilitando botón");
+                    $("#boton").attr("disabled", "disabled");
+                }
+            }
+        });
+    }
+
+    </script>
+}

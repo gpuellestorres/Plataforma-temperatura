@@ -1,0 +1,171 @@
+﻿@model List<AdminSensoresTemperatura.Models.molinos>
+@{
+    ViewBag.Title = "seleccionarMolinosInicio";
+}
+
+<div class="content-wrapper">
+    <div class="content">
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <h3>Seleccione los Molinos a mostrar en la página de Inicio:</h3>
+                <br />
+                <form role="form" method="post" action="@Url.Action("aplicarSeleccionMolinos", "Home")" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label class="control-label">Molino 1:</label>
+                        <select class="form-control" placeholder="Molino 1" name="molino1"
+                                id="molino1" required>
+                            <option selected>Seleccione una opción</option>
+                            @{
+                                for (int i = 0; i < Model.Count; i++)
+                                {
+                                    if (Session["molino1"] != null && Model[i].nombre.Equals(Session["molino1"]))
+                                    {
+                                        <option value="@Model[i].nombre" selected>@Model[i].nombre</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@Model[i].nombre">@Model[i].nombre</option>
+                                    }
+                                }
+                            }
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">Molino 2:</label>
+                        <select class="form-control" placeholder="Molino 2" name="molino2" id="molino2" required>
+                            <option selected>Seleccione una opción</option>
+                            @{
+                                for (int i = 0; i < Model.Count; i++)
+                                {
+                                    if (Session["molino2"] != null && Model[i].nombre.Equals(Session["molino2"]))
+                                    {
+                                        <option value="@Model[i].nombre" selected>@Model[i].nombre</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@Model[i].nombre">@Model[i].nombre</option>
+                                    }
+                                }
+}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">Molino 3:</label>
+                        <select class="form-control" placeholder="Molino 3" name="molino3" id="molino3" required>
+                            <option selected>Seleccione una opción</option>
+                            @{
+                                for (int i = 0; i < Model.Count; i++)
+                                {
+                                    if (Session["molino3"] != null && Model[i].nombre.Equals(Session["molino3"]))
+                                    {
+                                        <option value="@Model[i].nombre" selected>@Model[i].nombre</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@Model[i].nombre">@Model[i].nombre</option>
+                                    }
+                                }
+}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">Molino 4:</label>
+                        <select class="form-control" placeholder="Molino 4" name="molino4" id="molino4" required>
+                            <option selected>Seleccione una opción</option>
+                            @{
+                                for (int i = 0; i < Model.Count; i++)
+                                {
+                                    if (Session["molino4"] != null && Model[i].nombre.Equals(Session["molino4"]))
+                                    {
+                                        <option value="@Model[i].nombre" selected>@Model[i].nombre</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@Model[i].nombre">@Model[i].nombre</option>
+                                    }
+                                }
+}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">Molino 5:</label>
+                        <select class="form-control" placeholder="Molino 5" name="molino5" id="molino5" required>
+                            <option selected>Seleccione una opción</option>
+                            @{
+                                for (int i = 0; i < Model.Count; i++)
+                                {
+                                    if (Session["molino5"] != null && Model[i].nombre.Equals(Session["molino5"]))
+                                    {
+                                        <option value="@Model[i].nombre" selected>@Model[i].nombre</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@Model[i].nombre">@Model[i].nombre</option>
+                                    }
+                                }
+}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">Molino 6:</label>
+                        <select class="form-control" placeholder="Molino 6" name="molino6" id="molino6" required>
+                            <option selected>Seleccione una opción</option>
+                            @{
+                                for (int i = 0; i < Model.Count; i++)
+                                {
+                                    if (Session["molino6"] != null && Model[i].nombre.Equals(Session["molino6"]))
+                                    {
+                                        <option value="@Model[i].nombre" selected>@Model[i].nombre</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@Model[i].nombre">@Model[i].nombre</option>
+                                    }
+                                }
+}
+                        </select>
+                    </div>
+                    <!-- Change this to a button or input when using this as a form -->
+                    <div class="modal-footer">
+                        <a href="@Url.Action("Index","Home")" class="btn btn-lg btn-default">Cancelar</a>
+                        <button type="submit" id="boton" class="btn btn-lg btn-primary">Guardar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+<script type="text/javascript">
+
+    $('select').change(function () {
+        esteValor = $(this).val();
+        esteCampo = $(this);
+
+        listaActuales = new Array();
+
+        if (esteValor != "Seleccione una opción") {
+            $('select').not(esteCampo).each(function () {
+                $(this).find("option[value='" + esteValor + "']").remove();
+            });
+        }
+        else
+        {
+            esteCampo.find("option").each(function()
+            {
+                valorAgregar = $(this).val();
+                $('select').not(esteCampo).each(function () {
+                    if ($(this).val() != valorAgregar) {
+                        $(this).find("option[value='" + valorAgregar + "']").remove();
+                        $(this).append("<option value='" + valorAgregar + "'>" + valorAgregar + "</option>");
+                    }                    
+                });
+            });
+        }
+
+    });
+    
+</script>
+}
+}

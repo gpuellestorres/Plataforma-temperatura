@@ -1,0 +1,195 @@
+﻿@{
+    ViewBag.Title = "nuevo";
+}
+<div class="content-wrapper">
+    <div class="content">
+        <div class="row">
+            <h3 class="text-center">Agregar Sensor</h3>
+            <div class="col-sm-2"></div>
+            <div class="col-md-8">
+                <form action="@Url.Action("Guardar","Sensor")" role="form" method="post" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label class="control-label">EPC del Sensor</label>
+                        <div id="divNombreNombre" class="form-group">
+                            <div id="divMensaje" class="form-group">
+                                <input type="text" class="form-control" name="EPC" id="id"
+                                       maxlength="100" placeholder="" required>
+                                <span id="spanInput" class="glyphicon form-control-feedback"></span>
+                                <div id="mensaje" class="alert alert-danger hidden">
+                                    <strong>Error: </strong>ya existe un EPC con ese código
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">Molino al que pertenece</label>
+                        <div id="divNombreNombre" class="form-group">
+                            <select class="form-control" name="molino" id="molino" required>
+                                <option value="seleccione">Seleccione una opción</option>
+                                @foreach (AdminSensoresTemperatura.Models.molinos molino in (List<AdminSensoresTemperatura.Models.molinos>)ViewData["molinos"])
+                                {
+                                    if (ViewBag.molino != null && ViewBag.molino.Equals(molino.nombre))
+                                    {
+                                        <option value="@molino.nombre" selected>@molino.nombre</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@molino.nombre">@molino.nombre</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">Numero de polo</label>
+                        <div id="divNombreNombre" class="form-group">
+                            @if (ViewBag.molino != null)
+                            {
+                                <input type="text" class="form-control" name="numero" id="numero" maxlength="100"
+                                       value="@(AdminSensoresTemperatura.Models.sensores.obtenerMayorsensor(ViewBag.molino)+1)" required readonly>
+                            }
+                            else
+                            {
+                                <input type="text" class="form-control" name="numero" id="numero" maxlength="100"
+                                       required readonly>
+                            }
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">Valor de temperatura media para alarmas</label>
+                        @if (ViewBag.molino != null)
+                        {
+                            AdminSensoresTemperatura.Models.molinos seleccionado = new AdminSensoresTemperatura.Models.molinos().getMolino(ViewBag.molino);
+                            <input type="text" class="form-control" name="tMinima" id="tMinima" maxlength="100"
+                                   value="@(seleccionado.alarmaMedia)" required>
+                        }
+                        else
+                        {
+                            <input type="text" class="form-control" name="tMinima" id="tMinima" maxlength="100" placeholder="" required>
+                        }
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">Valor de temperatura alta para alarma</label>
+                        @if (ViewBag.molino != null)
+                        {
+                            AdminSensoresTemperatura.Models.molinos seleccionado = new AdminSensoresTemperatura.Models.molinos().getMolino(ViewBag.molino);
+                            <input type="text" class="form-control" name="tMaxima" id="tMaxima" maxlength="100"
+                                   value="@(seleccionado.alarmaAlta)" required>
+                        }
+                        else
+                        {
+                            <input type="text" class="form-control" name="tMaxima" id="tMaxima" maxlength="100" placeholder="" required>
+                        }
+                    </div>
+                    <div class="modal-footer">
+                        @if (ViewBag.molino != null)
+                        {
+                            <a type="button" class="btn btn-default btn-lg" href="@Url.Action("todosMolino","Sensor", new { molino = ViewBag.molino})"><i class="glyphicon glyphicon-log-out"></i>&nbsp;Cancelar</a>
+                        }
+                        else if (ViewBag.desdeIndex != null)
+                        {
+                            <a type="button" class="btn btn-default btn-lg" href="@Url.Action("Index","Home")"><i class="glyphicon glyphicon-log-out"></i>&nbsp;Cancelar</a>
+                        }
+                        else
+                        {
+                            <a type="button" class="btn btn-default btn-lg" href="@Url.Action("todos","Sensor")"><i class="glyphicon glyphicon-log-out"></i>&nbsp;Cancelar</a>
+                        }
+                        <button type="submit" class="btn btn-primary btn-lg" id="btn-nuevo"><i class="glyphicon glyphicon-floppy-disk"></i>&nbsp;Guardar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script type="text/javascript">
+
+        $("#id").change(function () {
+            verificarCampos();
+        });
+
+        $("#molino").change(function () {
+            verificarCampos();
+            
+            molino = $("#molino").val();
+            console.log("molino: " + molino);
+
+            if (molino == "seleccione") {
+                $("#tMinima").val(retorno.split(";")[0]);
+                $("#tMaxima").val(retorno.split(";")[1]);
+                return;
+            }
+            $.ajax({
+                url: "/Sensor/temperaturasMolino",
+                data: { "nombreMolino": molino },
+
+                success: function (retorno) {
+
+                    console.log(retorno);
+
+                    if (retorno != "null") {
+                        $("#tMinima").val(retorno.split(";")[0]);
+                        $("#tMaxima").val(retorno.split(";")[1]);
+                        $("#numero").val(retorno.split(";")[2]);
+                    }
+                }
+            });
+        });
+        
+        function verificarCampos()
+        {
+            id = $("#id").val();
+            console.log("id: " + id);
+
+            deshabilitarBoton = false;
+
+            $.ajax({
+                url: "verificarSensor", data: { "valor_sensor": id },
+
+                success: function (retorno) {
+
+                    console.log(retorno);
+
+                    if ($("#molino").val() == "seleccione" || id=="") {
+                        deshabilitarBoton = true;
+                    }
+
+                    if (retorno == "true") {
+                        deshabilitarBoton = true;
+
+                        $("#divMensaje").addClass(" has-error");
+                        $("#divMensaje").addClass(" has-feedback");
+                        $("#divMensaje").removeClass(" has-success");
+
+                        $("#spanInput").addClass("glyphicon-remove");
+                        $("#spanInput").removeClass("glyphicon-ok");
+
+                        $("#mensaje").removeClass("hidden");
+                    }
+                    else {
+
+                        $("#divMensaje").addClass(" has-feedback");
+                        $("#divMensaje").removeClass(" has-error");
+                        if(id!="")$("#divMensaje").addClass(" has-success");
+                        $("#spanInput").addClass("glyphicon-ok");
+                        $("#spanInput").removeClass("glyphicon-remove");
+
+                        $("#mensaje").addClass("hidden");
+                    }
+
+                    if (deshabilitarBoton) {
+                        $("#btn-nuevo").attr("disabled", "disabled");
+                    }
+                    else {
+                        $("#btn-nuevo").removeAttr("disabled");
+                    }
+                }
+            });
+        }
+    </script>
+}
+
+
+
+

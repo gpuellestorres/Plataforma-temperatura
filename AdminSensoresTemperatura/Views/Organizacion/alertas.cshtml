@@ -1,0 +1,114 @@
+﻿@model AdminSensoresTemperatura.Models.organizaciones
+@{
+    ViewBag.Title = "Todas las organizaciones del sistema";
+    WebGrid grid = new WebGrid(@Model.informacionAlertas, rowsPerPage: 10);
+}
+
+
+<div class="content-wrapper">
+    @if (ViewBag.mensaje != null && ViewBag.mensaje.Equals("agregado"))
+    {
+        <div class="alert alert-success alert-dismissable">
+            <button type="button" class="close" data-dismiss="alert"
+                    aria-hidden="true">
+                &times;
+            </button>
+            El nuevo receptor de alertas ha sido agregado correctamente
+        </div>
+    }
+    @if (ViewBag.mensaje != null && ViewBag.mensaje.Equals("eliminado"))
+    {
+        <div class="alert alert-success alert-dismissable">
+            <button type="button" class="close" data-dismiss="alert"
+                    aria-hidden="true">
+                &times;
+            </button>
+            El receptor de alertas ha sido eliminado correctamente
+        </div>
+    }
+    @if (ViewBag.mensaje != null && ViewBag.mensaje.Equals("modificado"))
+    {
+        <div class="alert alert-success alert-dismissable">
+            <button type="button" class="close" data-dismiss="alert"
+                    aria-hidden="true">
+                &times;
+            </button>
+            El receptor de alertas ha sido modificado correctamente
+        </div>
+    }
+    <br />
+    <div class="page-header">
+        <h2 class="text-center">Receptores de alertas para la organización "@Model.nombre"</h2>
+    </div>
+
+    <div class="content">
+
+        <div class="table table-responsive">
+            @grid.GetHtml(
+            columns: grid.Columns(
+
+            grid.Column("nombre",
+            header: string.Format("Nombre {0}", grid.SortColumn == "nombre" ? grid.SortDirection == SortDirection.Ascending ? "⇈" : "⇊" : "")),
+
+            grid.Column("correo",
+                     header: string.Format("Correo {0}", grid.SortColumn == "correo" ? grid.SortDirection == SortDirection.Ascending ? "⇈" : "⇊" : "")),
+
+            grid.Column("celular",
+                     header: string.Format("Celular {0}", grid.SortColumn == "celular" ? grid.SortDirection == SortDirection.Ascending ? "⇈" : "⇊" : "")),
+
+            grid.Column("organizacion",
+                    header: string.Format("Organización {0}", grid.SortColumn == "organizacion" ? grid.SortDirection == SortDirection.Ascending ? "⇈" : "⇊" : "")),
+
+            grid.Column("",
+                header: "Editar",
+                format: @<text>
+                    <a href="@Url.Action("EditarAlerta", "Organizacion", new { correo = item.correo, organizacion = @Model.nombre })"><span class='glyphicon glyphicon-edit text-primary'></span></a>
+                </text>),
+
+            grid.Column("",
+                header: "Eliminar",
+                format: @<text>
+                    <a href="#" data-toggle="modal" data-target="#myModal" onclick="funcionDelete('@item.correo')" title="Eliminar"><span class='glyphicon glyphicon-remove text-danger'></span></a>
+                </text>)
+              ), tableStyle: "table table-hover table-bordered table-striped", footerStyle: "pagination")
+        </div>
+        <div class="modal-footer">
+            <a href="@Url.Action("NuevaAlerta", "Organizacion", new { organizacion = @Model.nombre })" type="button" class="btn btn-default"><i class="glyphicon glyphicon-plus-sign "></i>&nbsp;Nuevo</a>
+        </div>
+
+
+        <!--Modal-->
+        <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                        <h4 class="modal-title" id="myModalLabel">¿Eliminar Información de Alertas?</h4>
+                    </div>
+                    <div class="modal-body">
+                        <h5 class="text-center" id="text-modal"></h5>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal"><i class="glyphicon glyphicon-remove"></i>Cancelar</button>
+                        <a href="" type="button" id="btn_delete" class="btn btn-primary"><i class="glyphicon glyphicon-ok"></i>Eliminar</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts{
+    <script type="text/javascript">
+
+        function funcionDelete(nombre) {
+            
+            $("#text-modal").html("");
+            var cadena = "@Url.Action("eliminarAlerta", "Organizacion", new { correo = "name", organizacion = @Model.nombre })";
+            cadena = cadena.replace("name", nombre);
+            cadena = cadena.replace("&amp;", "&");
+            $("#btn_delete").attr("href", cadena);
+            $("#text-modal").append("¿Estás seguro de que deseas eliminar al receptor <strong>" + nombre + "</strong> de la información de Alertas?");
+        }
+
+    </script>
+}

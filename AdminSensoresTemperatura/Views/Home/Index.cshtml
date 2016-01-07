@@ -1,0 +1,882 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+<div class="content-wrapper" style="background-color:#000000; padding-left:0px; padding-right:0px !important">
+    <div class="content" style="background-color:#000000 !important">
+        @if (ViewBag.nombreMolino2 == null)
+        {
+            if (ViewBag.nombreMolino1 != null)
+            {
+                <div class="col-sm-12">
+                    <div id="chartdiv1" class="text-center" style="width:1000px; height:700px; background-color:#000000 !important">
+                    </div>
+                </div>
+            }
+        }
+        else if (ViewBag.nombreMolino3 == null)
+        {
+            if (ViewBag.nombreMolino1 != null)
+            {
+                <div class="col-sm-6">
+                    <div id="chartdiv1" class="text-center" style="width:600px; height:600px; background-color:#000000 !important">
+                    </div>
+                </div>
+            }
+            if (ViewBag.nombreMolino2 != null)
+            {
+                <div class="col-sm-6">
+                    <div id="chartdiv2" class="text-center" style="width:600px; height:600px; background-color:#000000 !important">
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            if (ViewBag.nombreMolino1 != null)
+            {
+                <div class="col-sm-4">
+                    <div id="chartdiv1" class="text-center" style="width:350px; height:400px; background-color:#000000 !important">
+                    </div>
+                </div>
+            }
+            if (ViewBag.nombreMolino2 != null)
+            {
+                <div class="col-sm-4">
+                    <div id="chartdiv2" class="text-center" style="width:350px; height:400px; background-color:#000000 !important">
+                    </div>
+                </div>
+            }
+            if (ViewBag.nombreMolino3 != null)
+            {
+                <div class="col-sm-4">
+                    <div id="chartdiv3" class="text-center" style="width:350px; height:400px; background-color:#000000 !important">
+                    </div>
+                </div>
+            }
+            <div class="clearfix"></div>
+            if (ViewBag.nombreMolino4 != null)
+            {
+                <div class="col-sm-4">
+                    <div id="chartdiv4" class="text-center" style="width:350px; height:400px; background-color:#000000 !important">
+                    </div>
+                </div>
+            }
+            if (ViewBag.nombreMolino5 != null)
+            {
+                <div class="col-sm-4">
+                    <div id="chartdiv5" class="text-center" style="width:350px; height:400px; background-color:#000000 !important">
+                    </div>
+                </div>
+            }
+            if (ViewBag.nombreMolino6 != null)
+            {
+                <div class="col-sm-4">
+                    <div id="chartdiv6" class="text-center" style="width:350px; height:400px; background-color:#000000 !important">
+                    </div>
+                </div>
+            }
+        }
+        <div class="clearfix"></div>
+    </div>
+    <div class="modal-footer" style="background-color:#ecf0f5 !important">
+        <a href="@Url.Action("seleccionarMolinosInicio","Home")" class="btn btn-primary">Seleccionar Molinos a Mostrar</a>
+    </div>
+</div>
+
+@section scripts{
+
+    <script src="/Scripts/amcharts/amcharts.js" type="text/javascript"></script>
+    <script src="/Scripts/amcharts/radar.js" type="text/javascript"></script>
+    <script src="~/Scripts/amcharts/themes/dark.js" type="text/javascript"></script>
+    <script src="~/Scripts/amcharts/themes/light.js" type="text/javascript"></script>
+
+    
+
+    @if (ViewBag.nombreMolino1 != null)
+    {
+        List<AdminSensoresTemperatura.Models.lecturas> lecturas1 = 
+            (List<AdminSensoresTemperatura.Models.lecturas>)ViewBag.lecturasMolino1;
+        <script type="text/javascript">
+                var chart = AmCharts.makeChart("chartdiv1",{
+                    "type": "radar",
+                    "theme": "dark",
+                    "categoryField": "category",
+                    "graphs": [{
+                        "balloonText": "Polo [[category]]: [[value]]° Celsius",
+                        "bullet": "round",
+                        "valueField": "value"
+                    }],
+                    "valueAxes": [{
+                        "axisTitleOffset": 20,
+                        "minimum": 0,
+                        "maximum": 100,
+                        "autoGridCount ": true,
+                        "axisAlpha": 0.15,
+                        "dashLength": 5,
+                        "gridType": "circles",
+                        "autoGridCount": false,
+                        "axisAlpha": 0.25,
+                        "fillAlpha": 0.05,
+                        "fillColor": "#FFF",
+                        "gridAlpha": 0.08,
+                        "position": "left","guides": [{
+                            "angle": 0,
+                            "fillAlpha": 0.4,
+                            "fillColor": "green",
+                            "tickLength": 0,
+                            "toAngle": 360,
+                            "toValue": @ViewBag.AlertaMedia1.ToString().Replace(",","."),
+                            "value": 0,
+                            "lineAlpha": 0,
+
+                        },
+                        {
+                            "angle": 0,
+                            "fillAlpha": 0.4,
+                            "fillColor": "yellow",
+                            "tickLength": 0,
+                            "toAngle": 360,
+                            "toValue": @ViewBag.AlertaAlta1.ToString().Replace(",","."),
+                            "value": @ViewBag.AlertaMedia1.ToString().Replace(",","."),
+                            "lineAlpha": 0,
+
+                        },
+                        {
+                            "angle": 0,
+                            "fillAlpha": 0.4,
+                            "fillColor": "red",
+                            "tickLength": 0,
+                            "toAngle": 360,
+                            "toValue": @ViewBag.AlertaAltaMasTreinta1.ToString().Replace(",","."),
+                            "value": @ViewBag.AlertaAlta1.ToString().Replace(",","."),
+                            "lineAlpha": 0
+                        }]
+
+                    }],
+
+                    "dataProvider": [
+                        @for (int i = 0; i < lecturas1.Count; i++)
+                        {
+                            <text>
+                                    {
+                                        "category": "@lecturas1[i].numeroPolo",
+                                        "value": @lecturas1[i].temperatura.ToString().Replace(",", "."),
+                                    }
+                                        </text>
+                            if (i != lecturas1.Count - 1)
+                            {
+                                <text>
+                                        ,
+                                        </text>
+                            }
+                        }
+                    ]
+                });
+
+
+            chart.addTitle('Últimas Lecturas Molino - "@ViewBag.nombreMolino1"', 13);
+            chart.addListener("clickGraphItem", handleClick);
+
+
+            function handleClick(event)
+            {
+                var direccion="@Url.Action("GraficoSensorVeinteMinutosNSensorYMolino", "Graficos",
+                new { numeroSensor = "numSensor", nombreMolino = @ViewBag.nombreMolino1 })";
+                numSensor=event.item.category+"";
+                //numSensor=numSensor.split(" ")[1];
+                direccion=direccion.replace("numSensor", numSensor);
+                direccion=direccion.replace("&amp;", "&");
+                window.location =direccion;
+            }
+            
+            // set up the chart to update every second
+            setInterval(function () {
+                $.ajax({
+                    @{
+                string url = Url.Action("ultimosValoresGraficoMolino", "Graficos");
+                    }
+                    url: "@url",
+                    data: { "molino": "@ViewBag.nombreMolino1" },
+
+                    success: function (retorno) {
+
+                        var arr = retorno.split(';');
+
+                        chart.dataProvider=[];
+
+                        for(var i=0; i<arr.length; i++)
+                        {
+                            var nombrePolo="" + arr[i].split(',')[0];
+
+                            chart.dataProvider.push({
+                                "category": nombrePolo,
+                                "value": arr[i].split(',')[1]
+                            });
+                        }
+
+                        chart.validateData();
+                    }
+
+                });
+
+            }, 3000);
+        </script>
+    }
+    @if (ViewBag.nombreMolino2 != null)
+    {
+        List<AdminSensoresTemperatura.Models.lecturas> lecturas2 =
+        (List<AdminSensoresTemperatura.Models.lecturas>)ViewBag.lecturasMolino2;
+        <script type="text/javascript">
+            var chart2 = AmCharts.makeChart("chartdiv2",{
+                "type": "radar",
+                "theme": "dark",
+                "categoryField": "category",
+                "graphs": [{
+                    "balloonText": "Polo [[category]]: [[value]]° Celsius",
+                    "bullet": "round",
+                    "valueField": "value"
+                }],
+                "valueAxes": [{
+                    "axisTitleOffset": 20,
+                    "minimum": 0,
+                    "maximum": 100,
+                    "autoGridCount ": true,
+                    "axisAlpha": 0.15,
+                    "dashLength": 5,
+                    "gridType": "circles",
+                    "autoGridCount": false,
+                    "axisAlpha": 0.25,
+                    "fillAlpha": 0.05,
+                    "fillColor": "#FFF",
+                    "gridAlpha": 0.08,
+                    "position": "left","guides": [{
+                        "angle": 0,
+                        "fillAlpha": 0.4,
+                        "fillColor": "green",
+                        "tickLength": 0,
+                        "toAngle": 360,
+                        "toValue": @ViewBag.AlertaMedia1.ToString().Replace(",","."),
+                        "value": 0,
+                        "lineAlpha": 0,
+
+                    },
+                    {
+                        "angle": 0,
+                        "fillAlpha": 0.4,
+                        "fillColor": "yellow",
+                        "tickLength": 0,
+                        "toAngle": 360,
+                        "toValue": @ViewBag.AlertaAlta1.ToString().Replace(",","."),
+                        "value": @ViewBag.AlertaMedia1.ToString().Replace(",","."),
+                        "lineAlpha": 0,
+
+                    },
+                    {
+                        "angle": 0,
+                        "fillAlpha": 0.4,
+                        "fillColor": "red",
+                        "tickLength": 0,
+                        "toAngle": 360,
+                        "toValue": @ViewBag.AlertaAltaMasTreinta1.ToString().Replace(",","."),
+                        "value": @ViewBag.AlertaAlta1.ToString().Replace(",","."),
+                        "lineAlpha": 0
+                    }]
+
+                }],
+
+                "dataProvider": [
+                    @for (int i = 0; i < lecturas2.Count; i++)
+                        {
+                            <text>
+                                {
+                                    "category": "@lecturas2[i].numeroPolo",
+                                    "value": @lecturas2[i].temperatura.ToString().Replace(",", "."),
+                                }
+                                    </text>
+                            if (i != lecturas2.Count - 1)
+                            {
+                                <text>
+                                    ,
+                                    </text>
+                            }
+                        }
+                ]
+            });
+
+
+            chart2.addTitle('Últimas Lecturas Molino - "@ViewBag.nombreMolino2"', 13);
+            chart2.addListener("clickGraphItem", handleClick);
+
+
+            function handleClick(event)
+            {
+                var direccion="@Url.Action("GraficoSensorVeinteMinutosNSensorYMolino", "Graficos",
+                new { numeroSensor = "numSensor", nombreMolino = @ViewBag.nombreMolino2 })";
+                numSensor=event.item.category+"";
+                //numSensor=numSensor.split(" ")[1];
+                direccion=direccion.replace("numSensor", numSensor);
+                direccion=direccion.replace("&amp;", "&");
+                window.location =direccion;
+            }
+
+            // set up the chart to update every second
+            setInterval(function () {
+                $.ajax({
+                    @{
+                string url = Url.Action("ultimosValoresGraficoMolino", "Graficos");
+                    }
+                    url: "@url",
+                    data: { "molino": "@ViewBag.nombreMolino2" },
+
+                    success: function (retorno) {
+
+                        var arr = retorno.split(';');
+
+                        chart2.dataProvider=[];
+
+                        for(var i=0; i<arr.length; i++)
+                        {
+                            var nombrePolo="" + arr[i].split(',')[0];
+
+                            chart2.dataProvider.push({
+                                "category": nombrePolo,
+                                "value": arr[i].split(',')[1]
+                            });
+                        }
+
+                        chart2.validateData();
+                    }
+
+                });
+
+            }, 3000);
+        </script>
+    }
+    @if (ViewBag.nombreMolino3 != null)
+    {
+        List<AdminSensoresTemperatura.Models.lecturas> lecturas3 =
+    (List<AdminSensoresTemperatura.Models.lecturas>)ViewBag.lecturasMolino3;
+        <script type="text/javascript">
+            var chart3 = AmCharts.makeChart("chartdiv3",{
+                "type": "radar",
+                "theme": "dark",
+                "categoryField": "category",
+                "graphs": [{
+                    "balloonText": "Polo [[category]]: [[value]]° Celsius",
+                    "bullet": "round",
+                    "valueField": "value"
+                }],
+                "valueAxes": [{
+                    "axisTitleOffset": 20,
+                    "minimum": 0,
+                    "maximum": 100,
+                    "autoGridCount ": true,
+                    "axisAlpha": 0.15,
+                    "dashLength": 5,
+                    "gridType": "circles",
+                    "autoGridCount": false,
+                    "axisAlpha": 0.25,
+                    "fillAlpha": 0.05,
+                    "fillColor": "#FFF",
+                    "gridAlpha": 0.08,
+                    "position": "left","guides": [{
+                        "angle": 0,
+                        "fillAlpha": 0.4,
+                        "fillColor": "green",
+                        "tickLength": 0,
+                        "toAngle": 360,
+                        "toValue": @ViewBag.AlertaMedia1.ToString().Replace(",","."),
+                        "value": 0,
+                        "lineAlpha": 0,
+
+                    },
+                    {
+                        "angle": 0,
+                        "fillAlpha": 0.4,
+                        "fillColor": "yellow",
+                        "tickLength": 0,
+                        "toAngle": 360,
+                        "toValue": @ViewBag.AlertaAlta1.ToString().Replace(",","."),
+                        "value": @ViewBag.AlertaMedia1.ToString().Replace(",","."),
+                        "lineAlpha": 0,
+
+                    },
+                    {
+                        "angle": 0,
+                        "fillAlpha": 0.4,
+                        "fillColor": "red",
+                        "tickLength": 0,
+                        "toAngle": 360,
+                        "toValue": @ViewBag.AlertaAltaMasTreinta1.ToString().Replace(",","."),
+                        "value": @ViewBag.AlertaAlta1.ToString().Replace(",","."),
+                        "lineAlpha": 0
+                    }]
+
+                }],
+
+                "dataProvider": [
+                    @for (int i = 0; i < lecturas3.Count; i++)
+                        {
+                            <text>
+                                {
+                                    "category": "@lecturas3[i].numeroPolo",
+                                    "value": @lecturas3[i].temperatura.ToString().Replace(",", "."),
+                                }
+                                    </text>
+                            if (i != lecturas3.Count - 1)
+                            {
+                                <text>
+                                    ,
+                                    </text>
+                            }
+                        }
+                ]
+            });
+
+
+            chart3.addTitle('Últimas Lecturas Molino - "@ViewBag.nombreMolino3"', 13);
+            chart3.addListener("clickGraphItem", handleClick);
+
+
+            function handleClick(event)
+            {
+                var direccion="@Url.Action("GraficoSensorVeinteMinutosNSensorYMolino", "Graficos",
+                new { numeroSensor = "numSensor", nombreMolino = @ViewBag.nombreMolino3 })";
+                numSensor=event.item.category+"";
+                //numSensor=numSensor.split(" ")[1];
+                direccion=direccion.replace("numSensor", numSensor);
+                direccion=direccion.replace("&amp;", "&");
+                window.location =direccion;
+            }
+
+            // set up the chart to update every second
+            setInterval(function () {
+                $.ajax({
+                    @{
+                string url = Url.Action("ultimosValoresGraficoMolino", "Graficos");
+                    }
+                    url: "@url",
+                    data: { "molino": "@ViewBag.nombreMolino3" },
+
+                    success: function (retorno) {
+
+                        var arr = retorno.split(';');
+
+                        chart3.dataProvider=[];
+
+                        for(var i=0; i<arr.length; i++)
+                        {
+                            var nombrePolo="" + arr[i].split(',')[0];
+
+                            chart3.dataProvider.push({
+                                "category": nombrePolo,
+                                "value": arr[i].split(',')[1]
+                            });
+                        }
+
+                        chart3.validateData();
+                    }
+
+                });
+
+            }, 3000);
+        </script>
+    }
+    @if (ViewBag.nombreMolino4 != null)
+    {
+        List<AdminSensoresTemperatura.Models.lecturas> lecturas4 =
+(List<AdminSensoresTemperatura.Models.lecturas>)ViewBag.lecturasMolino4;
+        <script type="text/javascript">
+            var chart4 = AmCharts.makeChart("chartdiv4",{
+                "type": "radar",
+                "theme": "dark",
+                "categoryField": "category",
+                "graphs": [{
+                    "balloonText": "Polo [[category]]: [[value]]° Celsius",
+                    "bullet": "round",
+                    "valueField": "value"
+                }],
+                "valueAxes": [{
+                    "axisTitleOffset": 20,
+                    "minimum": 0,
+                    "maximum": 100,
+                    "autoGridCount ": true,
+                    "axisAlpha": 0.15,
+                    "dashLength": 5,
+                    "gridType": "circles",
+                    "autoGridCount": false,
+                    "axisAlpha": 0.25,
+                    "fillAlpha": 0.05,
+                    "fillColor": "#FFF",
+                    "gridAlpha": 0.08,
+                    "position": "left","guides": [{
+                        "angle": 0,
+                        "fillAlpha": 0.4,
+                        "fillColor": "green",
+                        "tickLength": 0,
+                        "toAngle": 360,
+                        "toValue": @ViewBag.AlertaMedia1.ToString().Replace(",","."),
+                        "value": 0,
+                        "lineAlpha": 0,
+
+                    },
+                    {
+                        "angle": 0,
+                        "fillAlpha": 0.4,
+                        "fillColor": "yellow",
+                        "tickLength": 0,
+                        "toAngle": 360,
+                        "toValue": @ViewBag.AlertaAlta1.ToString().Replace(",","."),
+                        "value": @ViewBag.AlertaMedia1.ToString().Replace(",","."),
+                        "lineAlpha": 0,
+
+                    },
+                    {
+                        "angle": 0,
+                        "fillAlpha": 0.4,
+                        "fillColor": "red",
+                        "tickLength": 0,
+                        "toAngle": 360,
+                        "toValue": @ViewBag.AlertaAltaMasTreinta1.ToString().Replace(",","."),
+                        "value": @ViewBag.AlertaAlta1.ToString().Replace(",","."),
+                        "lineAlpha": 0
+                    }]
+
+                }],
+
+                "dataProvider": [
+                    @for (int i = 0; i < lecturas4.Count; i++)
+                        {
+                            <text>
+                                {
+                                    "category": "@lecturas4[i].numeroPolo",
+                                    "value": @lecturas4[i].temperatura.ToString().Replace(",", "."),
+                                }
+                                    </text>
+                            if (i != lecturas4.Count - 1)
+                            {
+                                <text>
+                                    ,
+                                    </text>
+                            }
+                        }
+                ]
+            });
+
+
+            chart4.addTitle('Últimas Lecturas Molino - "@ViewBag.nombreMolino4"', 13);
+            chart4.addListener("clickGraphItem", handleClick);
+
+
+            function handleClick(event)
+            {
+                var direccion="@Url.Action("GraficoSensorVeinteMinutosNSensorYMolino", "Graficos",
+                new { numeroSensor = "numSensor", nombreMolino = @ViewBag.nombreMolino4 })";
+                numSensor=event.item.category+"";
+                //numSensor=numSensor.split(" ")[1];
+                direccion=direccion.replace("numSensor", numSensor);
+                direccion=direccion.replace("&amp;", "&");
+                window.location =direccion;
+            }
+
+            // set up the chart to update every second
+            setInterval(function () {
+                $.ajax({
+                    @{
+                string url = Url.Action("ultimosValoresGraficoMolino", "Graficos");
+                    }
+                    url: "@url",
+                    data: { "molino": "@ViewBag.nombreMolino4" },
+
+                    success: function (retorno) {
+
+                        var arr = retorno.split(';');
+
+                        chart4.dataProvider=[];
+
+                        for(var i=0; i<arr.length; i++)
+                        {
+                            var nombrePolo="" + arr[i].split(',')[0];
+
+                            chart4.dataProvider.push({
+                                "category": nombrePolo,
+                                "value": arr[i].split(',')[1]
+                            });
+                        }
+
+                        chart4.validateData();
+                    }
+
+                });
+
+            }, 3000);
+        </script>
+    }
+    @if (ViewBag.nombreMolino5 != null)
+    {
+        List<AdminSensoresTemperatura.Models.lecturas> lecturas5 =
+(List<AdminSensoresTemperatura.Models.lecturas>)ViewBag.lecturasMolino5;
+        <script type="text/javascript">
+            var chart5 = AmCharts.makeChart("chartdiv5",{
+                "type": "radar",
+                "theme": "dark",
+                "categoryField": "category",
+                "graphs": [{
+                    "balloonText": "Polo [[category]]: [[value]]° Celsius",
+                    "bullet": "round",
+                    "valueField": "value"
+                }],
+                "valueAxes": [{
+                    "axisTitleOffset": 20,
+                    "minimum": 0,
+                    "maximum": 100,
+                    "autoGridCount ": true,
+                    "axisAlpha": 0.15,
+                    "dashLength": 5,
+                    "gridType": "circles",
+                    "autoGridCount": false,
+                    "axisAlpha": 0.25,
+                    "fillAlpha": 0.05,
+                    "fillColor": "#FFF",
+                    "gridAlpha": 0.08,
+                    "position": "left","guides": [{
+                        "angle": 0,
+                        "fillAlpha": 0.4,
+                        "fillColor": "green",
+                        "tickLength": 0,
+                        "toAngle": 360,
+                        "toValue": @ViewBag.AlertaMedia1.ToString().Replace(",","."),
+                        "value": 0,
+                        "lineAlpha": 0,
+
+                    },
+                    {
+                        "angle": 0,
+                        "fillAlpha": 0.4,
+                        "fillColor": "yellow",
+                        "tickLength": 0,
+                        "toAngle": 360,
+                        "toValue": @ViewBag.AlertaAlta1.ToString().Replace(",","."),
+                        "value": @ViewBag.AlertaMedia1.ToString().Replace(",","."),
+                        "lineAlpha": 0,
+
+                    },
+                    {
+                        "angle": 0,
+                        "fillAlpha": 0.4,
+                        "fillColor": "red",
+                        "tickLength": 0,
+                        "toAngle": 360,
+                        "toValue": @ViewBag.AlertaAltaMasTreinta1.ToString().Replace(",","."),
+                        "value": @ViewBag.AlertaAlta1.ToString().Replace(",","."),
+                        "lineAlpha": 0
+                    }]
+
+                }],
+
+                "dataProvider": [
+                    @for (int i = 0; i < lecturas5.Count; i++)
+                        {
+                            <text>
+                                {
+                                    "category": "@lecturas5[i].numeroPolo",
+                                    "value": @lecturas5[i].temperatura.ToString().Replace(",", "."),
+                                }
+                                    </text>
+                            if (i != lecturas5.Count - 1)
+                            {
+                                <text>
+                                    ,
+                                    </text>
+                            }
+                        }
+                ]
+            });
+
+
+            chart5.addTitle('Últimas Lecturas Molino - "@ViewBag.nombreMolino5"', 13);
+            chart5.addListener("clickGraphItem", handleClick);
+
+
+            function handleClick(event)
+            {
+                var direccion="@Url.Action("GraficoSensorVeinteMinutosNSensorYMolino", "Graficos",
+                new { numeroSensor = "numSensor", nombreMolino = @ViewBag.nombreMolino5 })";
+                numSensor=event.item.category+"";
+                //numSensor=numSensor.split(" ")[1];
+                direccion=direccion.replace("numSensor", numSensor);
+                direccion=direccion.replace("&amp;", "&");
+                window.location =direccion;
+            }
+
+            // set up the chart to update every second
+            setInterval(function () {
+                $.ajax({
+                    @{
+                string url = Url.Action("ultimosValoresGraficoMolino", "Graficos");
+                    }
+                    url: "@url",
+                    data: { "molino": "@ViewBag.nombreMolino5" },
+
+                    success: function (retorno) {
+
+                        var arr = retorno.split(';');
+
+                        chart5.dataProvider=[];
+
+                        for(var i=0; i<arr.length; i++)
+                        {
+                            var nombrePolo="" + arr[i].split(',')[0];
+
+                            chart5.dataProvider.push({
+                                "category": nombrePolo,
+                                "value": arr[i].split(',')[1]
+                            });
+                        }
+
+                        chart5.validateData();
+                    }
+
+                });
+
+            }, 3000);
+        </script>
+    }
+    @if (ViewBag.nombreMolino6 != null)
+    {
+        List<AdminSensoresTemperatura.Models.lecturas> lecturas6 =
+(List<AdminSensoresTemperatura.Models.lecturas>)ViewBag.lecturasMolino6;
+        <script type="text/javascript">
+            var chart6 = AmCharts.makeChart("chartdiv6",{
+                "type": "radar",
+                "theme": "dark",
+                "categoryField": "category",
+                "graphs": [{
+                    "balloonText": "Polo [[category]]: [[value]]° Celsius",
+                    "bullet": "round",
+                    "valueField": "value"
+                }],
+                "valueAxes": [{
+                    "axisTitleOffset": 20,
+                    "minimum": 0,
+                    "maximum": 100,
+                    "autoGridCount ": true,
+                    "axisAlpha": 0.15,
+                    "dashLength": 5,
+                    "gridType": "circles",
+                    "autoGridCount": false,
+                    "axisAlpha": 0.25,
+                    "fillAlpha": 0.05,
+                    "fillColor": "#FFF",
+                    "gridAlpha": 0.08,
+                    "position": "left","guides": [{
+                        "angle": 0,
+                        "fillAlpha": 0.4,
+                        "fillColor": "green",
+                        "tickLength": 0,
+                        "toAngle": 360,
+                        "toValue": @ViewBag.AlertaMedia1.ToString().Replace(",","."),
+                        "value": 0,
+                        "lineAlpha": 0,
+
+                    },
+                    {
+                        "angle": 0,
+                        "fillAlpha": 0.4,
+                        "fillColor": "yellow",
+                        "tickLength": 0,
+                        "toAngle": 360,
+                        "toValue": @ViewBag.AlertaAlta1.ToString().Replace(",","."),
+                        "value": @ViewBag.AlertaMedia1.ToString().Replace(",","."),
+                        "lineAlpha": 0,
+
+                    },
+                    {
+                        "angle": 0,
+                        "fillAlpha": 0.4,
+                        "fillColor": "red",
+                        "tickLength": 0,
+                        "toAngle": 360,
+                        "toValue": @ViewBag.AlertaAltaMasTreinta1.ToString().Replace(",","."),
+                        "value": @ViewBag.AlertaAlta1.ToString().Replace(",","."),
+                        "lineAlpha": 0
+                    }]
+
+                }],
+
+                "dataProvider": [
+                    @for (int i = 0; i < lecturas6.Count; i++)
+                        {
+                            <text>
+                                {
+                                    "category": "@lecturas6[i].numeroPolo",
+                                    "value": @lecturas6[i].temperatura.ToString().Replace(",", "."),
+                                }
+                                    </text>
+                            if (i != lecturas6.Count - 1)
+                            {
+                                <text>
+                                    ,
+                                    </text>
+                            }
+                        }
+                ]
+            });
+
+
+            chart6.addTitle('Últimas Lecturas Molino - "@ViewBag.nombreMolino6"', 13);
+            chart6.addListener("clickGraphItem", handleClick);
+
+
+            function handleClick(event)
+            {
+                var direccion="@Url.Action("GraficoSensorVeinteMinutosNSensorYMolino", "Graficos",
+                new { numeroSensor = "numSensor", nombreMolino = @ViewBag.nombreMolino6 })";
+                numSensor=event.item.category+"";
+                //numSensor=numSensor.split(" ")[1];
+                direccion=direccion.replace("numSensor", numSensor);
+                direccion=direccion.replace("&amp;", "&");
+                window.location =direccion;
+            }
+
+            // set up the chart to update every second
+            setInterval(function () {
+                $.ajax({
+                    @{
+                string url = Url.Action("ultimosValoresGraficoMolino", "Graficos");
+                    }
+                    url: "@url",
+                    data: { "molino": "@ViewBag.nombreMolino6" },
+
+                    success: function (retorno) {
+
+                        var arr = retorno.split(';');
+
+                        chart6.dataProvider=[];
+
+                        for(var i=0; i<arr.length; i++)
+                        {
+                            var nombrePolo="" + arr[i].split(',')[0];
+
+                            chart6.dataProvider.push({
+                                "category": nombrePolo,
+                                "value": arr[i].split(',')[1]
+                            });
+                        }
+
+                        chart6.validateData();
+                    }
+
+                });
+
+            }, 3000);
+        </script>
+    }
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('html,body').animate({
+                scrollTop: $("#chartdiv1").offset().top},
+            'slow');
+        });
+</script>
+    }

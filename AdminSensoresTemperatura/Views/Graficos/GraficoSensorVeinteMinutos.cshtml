@@ -1,0 +1,508 @@
+﻿@model List<AdminSensoresTemperatura.Models.lecturas>
+@{
+    ViewBag.Title = "Gráfico de Sensor";
+}
+<div class="content-wrapper" style="background-color:#000000; padding-left:0px; padding-right:0px !important">
+    <div class="content" style="background-color:#000000 !important">
+        <br class="hidden-sm" />
+        <br class="hidden-sm" />
+        <br class="hidden-sm" />
+        <div id="chartdiv" style="width:100%; height:400px !important"></div>
+        <br />
+        <br />
+        <div class="hidden" id="morrisChart"></div>
+    </div>
+    <div class="modal-footer" style="background-color:#ecf0f5 !important">
+        <a href="#chartdiv" class="btn btn-primary"><span class="glyphicon glyphicon-play" id="spanActualizar"></span><t id="botonActualizar"> Actualizar Datos</t></a>
+        <a href="@Url.Action("graficoMolinoAlternativa", "Graficos", new { nombreMolino = @ViewBag.Molino })" class="btn btn-primary"><i class="glyphicon glyphicon-screenshot"></i> Ver Gráfico Polar del Molino</a>
+        <a href="#" data-toggle="modal" data-target="#myModal" class="btn btn-primary"><span class="glyphicon glyphicon-calendar" aria-hidden="true"></span> Periodo de tiempo personalizado</a>
+        <a href="#" data-toggle="modal" data-target="#myModal_Reporte" class="btn btn-primary"><span class="glyphicon glyphicon-copy" aria-hidden="true"></span> Obtener Reporte PDF</a>
+    </div>
+
+
+    <!--MODAL-->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title" id="text-cabezera"></h4>
+                </div>
+                <div class="modal-body">
+                    <label>Fecha de Inicio:</label>
+                    <div id="cuerpo_fecha_inicio">
+                        <input type='text' class='form-control' name='fecha_inicio' id='fecha_inicio' placeholder='DD/MM/YYYY' pattern='[0-9][0-9]/[0-9][0-9]/[0-9][0-9][0-9][0-9]' required>
+                    </div>
+                    <label>Hora de Inicio:</label>
+                    <div id="cuerpo_fecha_inicio">
+                        <input type='text' class='form-control' name='hora_inicio' id='hora_inicio'
+                               data-date-format="hh:mm A" pattern="\d{1,2}[:]\d{1,2}[ ][A,P][M]"
+                               placeholder="HH:MM" required>
+                    </div>
+                    <br />
+                    <label>Fecha de Termino:</label>
+                    <div id="cuerpo_fecha_fin">
+                        <input type='text' class='form-control' name='fecha_fin' id='fecha_fin' placeholder='DD/MM/YYYY' pattern='[0-9][0-9]/[0-9][0-9]/[0-9][0-9][0-9][0-9]' required>
+                    </div>
+                    <label>Hora de Termino:</label>
+                    <div id="cuerpo_fecha_fin">
+                        <input type='text' class='form-control' name='hora_fin' id='hora_fin'
+                               data-date-format="hh:mm A" pattern="\d{1,2}[:]\d{1,2}[ ][A,P][M]"
+                               placeholder="HH:MM" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal"><i class="glyphicon glyphicon-remove"></i>Cancelar</button>
+                    <a href="#" type="button" id="botonFiltro" class="btn btn-primary" disabled><i class="glyphicon glyphicon-ok"></i>Aplicar Filtro</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="myModal_Reporte" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title" id="text-cabezera"></h4>
+                </div>
+                <div class="modal-body">
+                    <label>Fecha de Inicio:</label>
+                    <div id="cuerpo_fecha_inicio">
+                        <input type='text' class='form-control' name='fecha_inicio_Reporte' id='fecha_inicio_Reporte' placeholder='DD/MM/YYYY' pattern='[0-9][0-9]/[0-9][0-9]/[0-9][0-9][0-9][0-9]' required>
+                    </div>
+                    <label>Hora de Inicio:</label>
+                    <div id="cuerpo_fecha_inicio">
+                        <input type='text' class='form-control' name='hora_inicio_Reporte' id='hora_inicio_Reporte'
+                               data-date-format="hh:mm A" pattern="\d{1,2}[:]\d{1,2}[ ][A,P][M]"
+                               placeholder="HH:MM" required>
+                    </div>
+                    <br />
+                    <label>Fecha de Termino:</label>
+                    <div id="cuerpo_fecha_fin">
+                        <input type='text' class='form-control' name='fecha_fin_Reporte' id='fecha_fin_Reporte' placeholder='DD/MM/YYYY' pattern='[0-9][0-9]/[0-9][0-9]/[0-9][0-9][0-9][0-9]' required>
+                    </div>
+                    <label>Hora de Termino:</label>
+                    <div id="cuerpo_fecha_fin">
+                        <input type='text' class='form-control' name='hora_fin_Reporte' id='hora_fin_Reporte'
+                               data-date-format="hh:mm A" pattern="\d{1,2}[:]\d{1,2}[ ][A,P][M]"
+                               placeholder="HH:MM" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal"><i class="glyphicon glyphicon-remove"></i>Cancelar</button>
+                    <a href="#" type="button" id="botonFiltro_Reporte" class="btn btn-primary" data-dismiss="modal" disabled><i class="glyphicon glyphicon-ok"></i>Obtener Reporte</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts{
+
+<script src="/Scripts/amcharts/amcharts.js" type="text/javascript"></script>
+<script src="/admin/dist/js/export.js" type="text/javascript"></script>
+<link href="/admin/dist/css/export.css" rel="stylesheet" type="text/css">
+<script src="~/Scripts/amcharts/serial.js" type="text/javascript"></script>
+<script src="~/Scripts/amcharts/themes/dark.js" type="text/javascript"></script>
+<script src="~/Scripts/amcharts/themes/light.js" type="text/javascript"></script>
+
+    <script type="text/javascript">
+
+    function verificarCampos()
+    {
+        var valor = $("#fecha_inicio").val();
+        var valor2 = $("#fecha_fin").val();
+        var valor3 = $("#hora_inicio").val();
+        var valor4 = $("#hora_fin").val();
+
+        if (valor != "" & valor2 != "" & valor3 != "" & valor4 != "") {
+            $("#botonFiltro").removeAttr("disabled");
+        }
+        else {
+            $("#botonFiltro").attr("disabled", "disabled");
+        }
+    }
+
+    $("#fecha_inicio").focus(function () {
+        verificarCampos();
+    });
+
+    $("#fecha_fin").focus(function () {
+        verificarCampos();
+    });
+
+    $("#hora_inicio").focus(function () {
+        verificarCampos();
+    });
+
+    $("#hora_fin").focus(function () {
+        verificarCampos();
+    });
+
+    $("#fecha_inicio").click(function () {
+        verificarCampos();
+    });
+
+    $("#fecha_fin").click(function () {
+        verificarCampos();
+    });
+
+    $("#hora_inicio").click(function () {
+        verificarCampos();
+    });
+
+    $("#hora_fin").click(function () {
+        verificarCampos();
+    });
+
+    function verificarCampos_Reporte()
+    {
+        var valor = $("#fecha_inicio_Reporte").val();
+        var valor2 = $("#fecha_fin_Reporte").val();
+        var valor3 = $("#hora_inicio_Reporte").val();
+        var valor4 = $("#hora_fin_Reporte").val();
+
+        if (valor != "" & valor2 != "" & valor3 != "" & valor4 != "") {
+            $("#botonFiltro_Reporte").removeAttr("disabled");
+        }
+        else {
+            $("#botonFiltro_Reporte").attr("disabled", "disabled");
+        }
+    }
+
+    $("#fecha_inicio_Reporte").focus(function () {
+        verificarCampos_Reporte();
+    });
+
+    $("#fecha_fin_Reporte").focus(function () {
+        verificarCampos_Reporte();
+    });
+
+    $("#hora_inicio_Reporte").focus(function () {
+        verificarCampos_Reporte();
+    });
+
+    $("#hora_fin_Reporte").focus(function () {
+        verificarCampos_Reporte();
+    });
+
+    $("#fecha_inicio_Reporte").click(function () {
+        verificarCampos_Reporte();
+    });
+
+    $("#fecha_fin_Reporte").click(function () {
+        verificarCampos_Reporte();
+    });
+
+    $("#hora_inicio_Reporte").click(function () {
+        verificarCampos_Reporte();
+    });
+
+    $("#hora_fin_Reporte").click(function () {
+        verificarCampos_Reporte();
+    });
+
+    $("#fecha_inicio").datetimepicker({
+        viewMode: 'days',
+        format: 'DD/MM/YYYY'
+    });
+
+    $("#fecha_fin").datetimepicker({
+        viewMode: 'days',
+        format: 'DD/MM/YYYY'
+    });
+
+    $("#hora_inicio").datetimepicker({
+        format: 'hh/mm'
+    });
+
+    $("#hora_fin").datetimepicker({
+        format: 'hh/mm'
+    });
+
+    $("#fecha_inicio_Reporte").datetimepicker({
+        viewMode: 'days',
+        format: 'DD/MM/YYYY'
+    });
+
+    $("#fecha_fin_Reporte").datetimepicker({
+        viewMode: 'days',
+        format: 'DD/MM/YYYY'
+    });
+
+    $("#hora_inicio_Reporte").datetimepicker({
+        format: 'hh/mm'
+    });
+
+    $("#hora_fin_Reporte").datetimepicker({
+        format: 'hh/mm'
+    });
+
+    $("#botonFiltro").click(function(){
+        var fecha_inicio = $("#fecha_inicio").val();
+        var hora_inicio = $("#hora_inicio").val();
+        var fecha_fin = $("#fecha_fin").val();
+        var hora_fin = $("#hora_fin").val();
+
+        Inicio = fecha_inicio + " " + hora_inicio;
+        Fin = fecha_fin + " " + hora_fin;
+
+        ruta="@Url.Action("GraficoSensorEPCPeriodo", "Graficos", new { EPC = @ViewBag.EPC, inicio = "INICIO", fin = "FIN" })";
+        ruta=ruta.replace("INICIO", encodeURIComponent(Inicio));
+        ruta=ruta.replace("FIN", encodeURIComponent(Fin));
+        ruta=ruta.replace("&amp;", "&");
+        ruta=ruta.replace("&amp;", "&");
+
+        console.log(ruta);
+
+        window.location=ruta;
+    });
+
+    $("#botonFiltro_Reporte").click(function(){
+        var fecha_inicio = $("#fecha_inicio_Reporte").val();
+        var hora_inicio = $("#hora_inicio_Reporte").val();
+        var fecha_fin = $("#fecha_fin_Reporte").val();
+        var hora_fin = $("#hora_fin_Reporte").val();
+
+        Inicio = fecha_inicio + " " + hora_inicio;
+        Fin = fecha_fin + " " + hora_fin;
+
+        ruta="@Url.Action("formularioReporte", "Report", new { EPC = @ViewBag.EPC, inicio = "INICIO", fin = "FIN" })";
+        ruta=ruta.replace("INICIO", encodeURIComponent(Inicio));
+        ruta=ruta.replace("FIN", encodeURIComponent(Fin));
+        ruta=ruta.replace("&amp;", "&");
+        ruta=ruta.replace("&amp;", "&");
+
+        console.log(ruta);
+        window.open(
+          ruta,
+          '_blank' // <- This is what makes it open in a new window.
+        );
+    });
+
+    var chartData = generateChartData();
+    var chart = AmCharts.makeChart("chartdiv", {
+        "backgroundColor":"#000",
+        "backgroundAlpha":1, 
+        "type": "serial",
+        "theme": "dark",
+        "pathToImages": "/Images/images/",
+        "dataProvider": chartData,
+        "valueAxes": [{
+            "axisAlpha": 0.2,
+            "dashLength": 1,
+            "position": "left"
+        }],
+        "mouseWheelZoomEnabled": true,
+        "graphs": [{
+            "id": "g1",
+            "balloonText": "[[category]]<br/><b><span style='font-size:12px;'>Temperatura: [[value]]</span></b>",
+            "bullet": "round",
+            "bulletBorderAlpha": 1,
+            "bulletColor": "#FFFFFF",
+            "hideBulletsCount": 50,
+            "title": "red line",
+            "valueField": "temperatura",
+            "useLineColorForBulletBorder": true
+        }],
+        "chartScrollbar": {
+            "autoGridCount": true,
+            "graph": "g1",
+            "scrollbarHeight": 40
+        },
+        "chartCursor": {
+            "cursorPosition": "mouse"
+        },
+        "categoryField": "date",
+        "categoryAxis": {
+            "parseDates": true,
+            "axisColor": "#DADADA",
+            "minPeriod": "ss"
+        },
+        "export": {
+            "enabled": true,
+            "libs": {
+                "path": "/admin/dist/libs/"
+            }
+        }
+    });
+
+    chart.dataDateFormat = "YYYY-MM-DD, JJ:NN:SS";
+    chart.addListener("rendered", zoomChart);
+
+    @if (ViewBag.periodo == null)
+    {
+        <text>
+    chart.addTitle('Últimas Lecturas - Polo "@ViewBag.Sensor" / Molino "@ViewBag.Molino"',15);
+        </text>
+    }
+    else
+    {
+        <text>
+    chart.addTitle('Datos de tiempo personalizado - Polo "@ViewBag.Sensor" / Molino "@ViewBag.Molino"', 15);
+        </text>
+    }
+
+    zoomChart();
+
+    // this method is called when chart is first inited as we listen for "dataUpdated" event
+    function zoomChart() {
+        // different zoom methods can be used - zoomToIndexes, zoomToDates, zoomToCategoryValues
+        chart.zoomToIndexes(chartData.length - 40, chartData.length - 1);
+    }
+
+
+    // generate some random data, quite different range
+    function generateChartData() {
+        var chartData = [];
+
+        @{for (int i = 0; i < Model.Count; i++)
+            {
+                string año = @Model[i].fecha.Year + "";
+
+                string mes = @Model[i].fecha.Month + "";
+                //if (mes.Length == 1) mes = "0" + mes;
+
+                string dia = @Model[i].fecha.Day + "";
+                //if (dia.Length == 1) dia = "0" + dia;
+
+                string hora = @Model[i].fecha.Hour + "";
+                //if (hora.Length == 1) hora = "0" + hora;
+
+                string minuto = @Model[i].fecha.Minute + "";
+                //if (minuto.Length == 1) minuto = "0" + minuto;
+
+                string segundo = @Model[i].fecha.Second + "";
+                //if (segundo.Length == 1) segundo = "0" + segundo;
+
+                string milisegundo = @Model[i].fecha.Millisecond + "";
+
+                //fecha += "-" + mes + "-" + dia + " " + hora + ":" + minuto + ":" + segundo;
+                <text>
+        var fecha = new Date(@año, @mes, @dia, @hora, @minuto, @segundo, @milisegundo);
+        chartData.push({
+            date: fecha,
+            temperatura: @Model[i].temperatura.ToString().Replace(",",".")
+            });
+        </text>
+            }
+            <text>
+        return chartData;
+    }
+    </text>
+        }
+
+
+    @if (ViewBag.periodo == null)
+        {
+            <text>
+    actualizarGrafico=true;
+    $("#spanActualizar").removeClass("glyphicon-play");
+    $("#spanActualizar").addClass("glyphicon-stop");
+    $("#botonActualizar").text(' Detener Actualización de Datos');
+
+    tiempoComenzarActualizar=0;
+
+    </text>
+        }
+        else
+        {
+            <text>
+    actualizarGrafico=false;
+    $("#spanActualizar").removeClass("glyphicon-stop");
+    $("#spanActualizar").addClass("glyphicon-play");
+    $("#botonActualizar").text(' Actualizar Datos');
+    tiempoComenzarActualizar=300;//Se comienza a actualizar en 300 segundos
+    </text>
+        }
+
+    $("#botonActualizar").click(function(){
+        if(actualizarGrafico)
+        {
+            dejarActualizar();
+        }
+        else
+        {
+            comenzarActualizar();
+        }
+    });
+
+    function comenzarActualizar()
+    {
+        while(!actualizarGrafico)
+        {
+            actualizarGrafico=true;
+            $("#spanActualizar").removeClass("glyphicon-play");
+            $("#spanActualizar").addClass("glyphicon-stop");
+            $("#botonActualizar").text(' Detener Actualización de Datos');
+
+            tiempoComenzarActualizar=0;
+        }
+    }
+
+    function dejarActualizar()
+    {
+        while(actualizarGrafico)
+        {
+            actualizarGrafico=false;
+            $("#spanActualizar").removeClass("glyphicon-stop");
+            $("#spanActualizar").addClass("glyphicon-play");
+            $("#botonActualizar").text(' Actualizar Datos');
+            tiempoComenzarActualizar=300;//Se comienza a actualizar en 300 segundos
+        }
+    }
+
+    setInterval(function () {
+        console.log("Tiempo: " + tiempoComenzarActualizar);
+        if(tiempoComenzarActualizar<=0)
+        {
+            if(!actualizarGrafico)
+            {
+                comenzarActualizar();
+            }
+        }
+        else
+        {
+            tiempoComenzarActualizar-=10;
+            if(tiempoComenzarActualizar<-10)tiempoComenzarActualizar=-10;
+        }
+    }, 10000);
+
+    setInterval(function () {
+        if(actualizarGrafico)
+        {
+            $.ajax({
+                @{
+                    string url = Url.Action("ultimoValorSensor", "Graficos");
+                    }
+                url: "@url",
+                data: { "epc": "@ViewBag.EPC"
+                },
+
+                success: function (retorno) {
+
+                    if(chart.dataProvider.length>40)
+                    {
+                        chart.dataProvider.shift();
+                    }
+                    console.log("Cantidad datos: " + chart.dataProvider.length);
+                    
+
+                    var arr = retorno.split(';');
+
+                    var fecha = new Date(arr[0],arr[1],arr[2],arr[3],arr[4],arr[5],arr[6]);
+
+                    chart.dataProvider.push({
+                        date: fecha,
+                        temperatura: arr[7]
+                    });
+
+                    chart.validateData();
+                }
+            });
+        }
+    }, 3000);
+</script>
+}

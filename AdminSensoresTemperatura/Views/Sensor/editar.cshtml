@@ -1,0 +1,105 @@
+﻿@{
+    ViewBag.Title = "Editar Sensor";
+}
+@model AdminSensoresTemperatura.Models.sensores
+
+<div class="content-wrapper">
+    <div class="content">
+        <div class="row">
+            <h3 class="text-center">Editar Sensor</h3>
+            <div class="col-sm-2"></div>
+            <div class="col-sm-8">
+                <form action="@Url.Action("GuardarEditar", "Sensor")" role="form" method="post" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <input type="text" name="nombreAnterior" id="nombreAnterior" placeholder="EPC" value="@Model.epc" required hidden>
+                        <div class="form-group">
+                            <div id="divNombreNombre" class="form-group">
+                                <label class="control-label">EPC del sensor:</label>
+                                <input type="text" class="form-control" name="EPC" id="EPC" value="@Model.epc" placeholder="Nombre de Usuario" required>
+                                <span id="spanInputNombre" class="glyphicon form-control-feedback"></span>
+                                <div id="mensajeErrorNombre" class="alert alert-danger hidden">
+                                    <strong>Error: </strong> ya existe un sensor con ese EPC
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">Molino al que pertenece</label>
+                        <input class="form-control" name="molino" id="molino" value="@Model.molino" readonly required>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">Numero de polo</label>
+                        <input type="text" name="numero" id="numero" class="form-control"
+                               value="@Model.numero" required readonly>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">Valor de temperatura media para alarmas</label>
+                        <input type="text" class="form-control" name="tMinima" id="tMinima"
+                               maxlength="100" value="@Model.temperaturaMedia" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">Valor de temperatura alta para alarma</label>
+                        <input type="text" class="form-control" name="tMaxima" id="tMaxima"
+                               maxlength="100" value="@Model.temperaturaAlta" required>
+                    </div>
+                    <div class="modal-footer">
+                        <a type="button" class="btn btn-default btn-lg" href="@Url.Action("todos","Sensor")"><i class="glyphicon glyphicon-log-out"></i>&nbsp;Cancelar</a>
+                        <button type="submit" class="btn btn-primary btn-lg" id="btn-editar"><i class="glyphicon glyphicon-floppy-disk"></i>&nbsp;Guardar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts{
+<script type="text/javascript">
+    $("#EPC").change(function () {
+        verificarCampos();
+    });
+
+    function verificarCampos() {
+        var habilitarBoton = true;
+
+        var epcSensor = $("#EPC").val();
+
+        $.ajax({
+            url: "/Sensor/verificarSensor",
+            data: { "valor_sensor": epcSensor },
+
+            success: function (retorno) {
+
+                console.log("¿Existe usuario? " + retorno);
+
+                if (retorno == "false" || $("#nombreAnterior").val() == epcSensor) {
+                    $("#divNombreNombre").removeClass(" has-error");
+                    $("#divNombreNombre").addClass(" has-feedback");
+                    $("#divNombreNombre").addClass(" has-success");
+                    $("#spanInputNombre").addClass("glyphicon-ok");
+                    $("#spanInputNombre").removeClass("glyphicon-remove");
+                    $("#mensajeErrorNombre").addClass("hidden");
+                }
+                else {
+
+                    habilitarBoton = false;
+
+                    $("#divNombreNombre").addClass(" has-error");
+                    $("#divNombreNombre").addClass(" has-feedback");
+                    $("#divNombreNombre").removeClass(" has-success");
+                    $("#spanInputNombre").addClass("glyphicon-remove");
+                    $("#spanInputNombre").removeClass("glyphicon-ok");
+                    $("#mensajeErrorNombre").removeClass("hidden");
+                }
+
+                if (habilitarBoton) {
+                    console.log("habilitando botón");
+                    $("#btn-editar").removeAttr("disabled");
+                }
+                else {
+                    console.log("deshabilitando botón");
+                    $("#btn-editar").attr("disabled", "disabled");
+                }
+            }
+        });
+    }
+ </script>
+ }

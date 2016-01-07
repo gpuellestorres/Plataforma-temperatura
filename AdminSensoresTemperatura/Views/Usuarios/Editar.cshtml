@@ -1,0 +1,184 @@
+﻿@model AdminSensoresTemperatura.Models.usuarios
+@{
+    ViewBag.Title = "Editar Usuario";
+}
+
+<div class="content-wrapper">
+    <div class="content">
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <h3>Editar Usuario:</h3>
+                <br />
+                <form role="form" method="post" action="@Url.Action("editarUsuario", "Usuarios")" enctype="multipart/form-data">
+                    <input type="text" name="nombreAnterior" id="nombreAnterior" placeholder="Nombre de Usuario" value="@Model.nombreUsuario" required hidden>
+                    <div class="form-group">
+                        <div id="divNombreNombre" class="form-group">
+                            <label class="control-label">Nombre de usuario:</label>
+                            <input type="text" class="form-control" name="nombreUsuario" id="nombreUsuario" value="@Model.nombreUsuario" placeholder="Nombre de Usuario" required>
+                            <span id="spanInputNombre" class="glyphicon form-control-feedback"></span>
+                            <div id="mensajeErrorNombre" class="alert alert-danger hidden">
+                                <strong>Error: </strong> ya existe un usuario con este nombre
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">Nombre completo:</label>
+                        <input class="form-control" placeholder="Nombre Completo" name="nombreCompleto" value="@Model.nombreCompleto" type="text" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">Correo electrónico:</label>
+                        <input class="form-control" placeholder="Correo Electrónico" name="correo" type="email" value="@Model.correoElectronico" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">Celular:</label>
+                        <input class="form-control" placeholder="Celular" name="celular" type="text" value="@Model.celular" required pattern="[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]">
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">Rol:</label>
+                        <select name="rol" id="rol" class="form-control">
+                            <option value="Seleccione una opción">Seleccione una opción</option>
+                            @if (@Model.rol.Equals("analista"))
+                        {
+                                <option value="analista" selected>Analista</option>
+                        }
+                        else
+                        {
+                                <option value="analista">Analista</option>
+                        }
+                            @if (@Model.rol.Equals("tecnico"))
+                        {
+                                <option value="tecnico" selected>Técnico</option>
+                        }
+                        else
+                        {
+                                <option value="tecnico">Técnico</option>
+                        }
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">Password:</label>
+                        <input class="form-control" placeholder="Password" name="password" id="password" type="password" value="" required>
+                    </div>
+                    <div class="form-group">
+                        <div id="divNombre" class="form-group">
+                            <label class="control-label">Reetición de Password:</label>
+                            <input class="form-control" placeholder="Repita el password"
+                                   name="password2" id="password2" type="password" value="" required>
+                            <span id="spanInput" class="glyphicon form-control-feedback"></span>
+                            <div id="mensajeError" class="alert alert-danger hidden">
+                                <strong>Error: </strong> el password no coincide con su repetición
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Change this to a button or input when using this as a form -->
+                    <div class="modal-footer">
+                        <a href="@Url.Action("Index","Usuarios")" class="btn btn-lg btn-default">Cancelar</a>
+                        <button type="submit" id="boton" class="btn btn-lg btn-primary" disabled>Agregar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts{
+    <script type="text/javascript">
+        $("#nombreUsuario").change(function () {
+            verificarCampos();
+        });
+
+        $("#password").change(function () {
+            verificarCampos();
+        });
+
+        $("#password2").change(function () {
+            verificarCampos();
+        });
+
+        $("#rol").change(function () {
+            verificarCampos();
+        });
+
+        function verificarCampos() {
+            var habilitarBoton = true;
+
+            var nombreUsuario = $("#nombreUsuario").val();
+            $.ajax({
+                url: "existeUsuario",
+                data: { "nombreUsuario": nombreUsuario },
+
+                success: function (retorno) {
+
+                    console.log("¿Existe usuario? " + retorno);
+
+                    if (retorno == "false" || $("#nombreAnterior").val() == nombreUsuario) {
+                        $("#divNombreNombre").removeClass(" has-error");
+                        $("#divNombreNombre").addClass(" has-feedback");
+                        $("#divNombreNombre").addClass(" has-success");
+                        $("#spanInputNombre").addClass("glyphicon-ok");
+                        $("#spanInputNombre").removeClass("glyphicon-remove");
+                        $("#mensajeErrorNombre").addClass("hidden");
+                    }
+                    else {
+
+                        habilitarBoton = false;
+
+                        $("#divNombreNombre").addClass(" has-error");
+                        $("#divNombreNombre").addClass(" has-feedback");
+                        $("#divNombreNombre").removeClass(" has-success");
+                        $("#spanInputNombre").addClass("glyphicon-remove");
+                        $("#spanInputNombre").removeClass("glyphicon-ok");
+                        $("#mensajeErrorNombre").removeClass("hidden");
+                    }
+                }
+
+            });
+
+            var nueva = $("#password").val();
+            var nueva2 = $("#password2").val();
+            var rol = $("#rol").val();
+
+            if (nueva == "" || nueva2 == "") {
+                habilitarBoton = false;
+            }
+            else {
+
+                if (nueva == nueva2) {
+                    $("#divNombre").removeClass(" has-error");
+                    $("#divNombre").addClass(" has-feedback");
+                    $("#divNombre").addClass(" has-success");
+                    $("#spanInput").addClass("glyphicon-ok");
+                    $("#spanInput").removeClass("glyphicon-remove");
+                    $("#mensajeError").addClass("hidden");
+                }
+                else {
+                    habilitarBoton = false;
+                    $("#divNombre").addClass(" has-error");
+                    $("#divNombre").addClass(" has-feedback");
+                    $("#divNombre").removeClass(" has-success");
+                    $("#spanInput").addClass("glyphicon-remove");
+                    $("#spanInput").removeClass("glyphicon-ok");
+                    $("#mensajeError").removeClass("hidden");
+                }
+            }
+
+            if (rol == "Seleccione una opción") {
+                habilitarBoton = false;
+            }
+
+            if (habilitarBoton) {
+                $("#boton").removeAttr("disabled");
+            }
+            else {
+                $("#boton").attr("disabled", "disabled");
+            }
+        }
+
+        $(document).on("keypress", 'form', function (e) {
+            var code = e.keyCode || e.which;
+            if (code == 13) {
+                e.preventDefault();
+                return false;
+            }
+        });
+    </script>
+}

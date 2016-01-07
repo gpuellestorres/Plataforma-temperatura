@@ -1,0 +1,142 @@
+﻿@{
+    ViewBag.Title = "Nueva Planta";
+}
+
+<div class="content-wrapper">
+    <div class="content">
+        <br class="xs-hidden">
+        <br class="xs-hidden">
+        <br class="xs-hidden">
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <h3>Nueva Planta:</h3>
+                <br />
+                <form role="form" method="post" action="@Url.Action("agregarPlanta", "Planta")" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <div id="divNombreNombre" class="form-group">
+                            <label class="control-label">Nombre de Planta:</label>
+                            <input type="text" class="form-control" name="nombre" id="nombre"
+                                   placeholder="Nombre de Planta" required>
+                            <span id="spanInputNombre" class="glyphicon form-control-feedback"></span>
+                            <div id="mensajeErrorNombre" class="alert alert-danger hidden">
+                                <strong>Error: </strong> ya existe una planta con este nombre en el sistema
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">Organización:</label>
+                        <select class="form-control" placeholder="organizacion" name="organizacion"
+                                id="organizacion" type="text" required>
+                            <option selected>Seleccione una opción</option>
+                            @{
+                                List<string> orgs = ViewBag.Organizaciones;
+                                for (int i = 0; i < orgs.Count; i++)
+                                {
+                                    if (ViewBag.organizacion != null && ViewBag.organizacion.Equals(orgs[i]))
+                                    {
+                                        <option value="@orgs[i]" selected>@orgs[i]</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@orgs[i]">@orgs[i]</option>
+                                    }
+                                }
+                            }
+                        </select>
+                    </div>
+                    <!-- Change this to a button or input when using this as a form -->
+                    <div class="modal-footer">
+                        @if (ViewBag.organizacion != null)
+                        {
+                            <a href="@Url.Action("Index","Home")" class="btn btn-lg btn-default">Cancelar</a>
+                        }
+                        else if (ViewBag.desdeIndex != null)
+                        {
+                            <a href="@Url.Action("Index","Home")" class="btn btn-lg btn-default">Cancelar</a>
+                        }
+                        else
+                        {
+                            <a href="@Url.Action("Index","Planta")" class="btn btn-lg btn-default">Cancelar</a>
+                        }
+                        <button type="submit" id="boton" class="btn btn-lg btn-primary" disabled>Agregar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script type="text/javascript">
+
+    $("#nombre").change(function () {
+        verificarCampos();
+    });
+
+    $("#organizacion").change(function () {
+        verificarCampos();
+    });
+
+    function verificarCampos() {
+        var habilitarBoton = true;
+
+        var nombre = $("#nombre").val();
+
+        console.log("nombre: " + nombre);
+
+        $.ajax({
+            url: "existePlanta",
+            data: { "nombre": nombre },
+
+            success: function (retorno) {
+
+                console.log("¿Existe Planta? " + retorno);
+
+                if (retorno == "false") {
+                    $("#divNombreNombre").removeClass(" has-error");
+                    $("#divNombreNombre").addClass(" has-feedback");
+                    $("#divNombreNombre").addClass(" has-success");
+                    $("#spanInputNombre").addClass("glyphicon-ok");
+                    $("#spanInputNombre").removeClass("glyphicon-remove");
+                    $("#mensajeErrorNombre").addClass("hidden");
+                }
+                else {
+
+                    habilitarBoton = false;
+
+                    $("#divNombreNombre").addClass(" has-error");
+                    $("#divNombreNombre").addClass(" has-feedback");
+                    $("#divNombreNombre").removeClass(" has-success");
+                    $("#spanInputNombre").addClass("glyphicon-remove");
+                    $("#spanInputNombre").removeClass("glyphicon-ok");
+                    $("#mensajeErrorNombre").removeClass("hidden");
+                }
+
+                if ($("#organizacion").val() == "Seleccione una opción")
+                {
+                    habilitarBoton = false;
+                }
+
+                if (habilitarBoton) {
+                    console.log("habilitando botón");
+                    $("#boton").removeAttr("disabled");
+                }
+                else {
+                    console.log("deshabilitando botón");
+                    $("#boton").attr("disabled", "disabled");
+                }
+            }
+        });
+    }
+
+
+    $(document).on("keypress", 'form', function (e) {
+        var code = e.keyCode || e.which;
+        if (code == 13) {
+            e.preventDefault();
+            return false;
+        }
+    });
+
+    </script>
+}

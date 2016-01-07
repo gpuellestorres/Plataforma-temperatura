@@ -1,0 +1,33 @@
+﻿@model List<AdminSensoresTemperatura.Models.registros>
+@{
+    ViewBag.Title = "Registros del sistema";
+    WebGrid grid = new WebGrid(Model, rowsPerPage: 40);
+}
+
+<div class="content-wrapper">
+    <br />
+    <div class="page-header">
+        <h2 class="text-center">Todos los Registros del sistema</h2>
+    </div>
+    <div class="content">
+        <div class="table table-responsive">
+            @grid.GetHtml(
+            columns: grid.Columns(
+
+            grid.Column("fecha",
+            header: string.Format("Fecha {0}", grid.SortColumn == "fecha" ? grid.SortDirection == SortDirection.Ascending ? "⇈" : "⇊" : ""), style: "text-muted"),
+
+            grid.Column("usuario",
+                     header: string.Format("Usuario {0}", grid.SortColumn == "usuario" ? grid.SortDirection == SortDirection.Ascending ? "⇈" : "⇊" : ""), style: "text-muted"),
+
+            grid.Column("tipo",
+            header: string.Format("Tipo {0}", grid.SortColumn == "tipo" ? grid.SortDirection == SortDirection.Ascending ? "⇈" : "⇊" : ""), style: "text-muted"),
+
+            grid.Column("descripcion",
+            header: string.Format("Descripción {0}", grid.SortColumn == "descripcion" ? grid.SortDirection == SortDirection.Ascending ? "⇈" : "⇊" : ""), style: "text-muted")
+
+            ), tableStyle: "table table-hover table-bordered table-striped", footerStyle: "pagination")
+        </div>
+    </div>
+</div>
+

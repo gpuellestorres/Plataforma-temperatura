@@ -1,0 +1,38 @@
+﻿@{
+    ViewBag.Title = "formularioReporte";
+}
+
+<div class="content-wrapper">
+    <div class="content">
+        <br class="xs-hidden">
+        <br class="xs-hidden">
+        <br class="xs-hidden">
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <h3>Agregue Datos al Reporte:</h3>
+                <br />
+                <form role="form" method="post" action="@Url.Action("obtenerReporte", "Report")" enctype="multipart/form-data">
+                    <input type="text" name="inicio" value="@ViewBag.Inicio" class="hidden" />
+                    <input type="text" name="fin" value="@ViewBag.Fin" class="hidden" />
+                    <input type="text" name="EPC" value="@ViewBag.EPC" class="hidden" />
+                    <div class="form-group">
+                        <label class="control-label">Diagnóstico:</label>
+                        <textarea class="form-control" maxlength="500" placeholder="Ingrese un diagnóstico (opcional)" name="diagnostico"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">Recomendación:</label>
+                        <textarea class="form-control" maxlength="500" placeholder="Ingrese una recomendación (opcional)" name="recomendacion"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">Observaciones:</label>
+                        <textarea class="form-control" maxlength="500" placeholder="Ingrese observaciones (opcional)" name="observaciones"></textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <a href="@Url.Action("GraficoSensorVeinteMinutosNSensorYMolino", "Graficos", new { numeroSensor = ViewBag.Sensor, nombreMolino = @ViewBag.Molino })" class="btn btn-lg btn-default">Cancelar</a>
+                        <button type="submit" id="boton" class="btn btn-lg btn-primary">Obtener Reporte</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

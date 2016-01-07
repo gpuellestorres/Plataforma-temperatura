@@ -1,0 +1,115 @@
+﻿@{
+    ViewBag.Title = "Nueva Organización";
+}
+
+<div class="content-wrapper">
+    <div class="content">
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <h3>Nueva Organización:</h3>
+                <br />
+                <form role="form" method="post" action="@Url.Action("agregarOrganizacion", "Organizacion")" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <div id="divNombreNombre" class="form-group">
+                            <label>Nombre de organización:</label>
+                            <input type="text" class="form-control" name="nombre" id="nombre"
+                                   placeholder="Nombre de Organización" required>
+                            <span id="spanInputNombre" class="glyphicon form-control-feedback"></span>
+                            <div id="mensajeErrorNombre" class="alert alert-danger hidden">
+                                <strong>Error: </strong> ya existe una organización con este nombre
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Nombre de Contacto:</label>
+                        <input class="form-control" placeholder="Contacto" name="contacto" type="text">
+                    </div>
+                    <div class="form-group">
+                        <label>Correo:</label>
+                        <input class="form-control" placeholder="Correo Electrónico" name="correo" type="email">
+                    </div>
+                    <div class="form-group">
+                        <label>Celular:</label>
+                        <input class="form-control" placeholder="Celular (nueve dígitos)" name="celular" type="text" pattern="[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]">
+                    </div>
+                    <div class="form-group">
+                        <label>Logo:</label>
+                        <input class="form-control" placeholder="Logo" name="logo" id="logo" type="file" accept=".jpg,.jpeg,.png,.bmp,.tif,.tiff">
+                    </div>
+                    <div class="modal-footer">
+                        @if (ViewBag.desdeIndex != null)
+                        {
+                            <a href="@Url.Action("Index","Home")" class="btn btn-lg btn-default">Cancelar</a>
+                        }
+                        else
+                        {
+                            <a href="@Url.Action("Todas","Organizacion")" class="btn btn-lg btn-default">Cancelar</a>
+                        }
+                        <button type="submit" id="boton" class="btn btn-lg btn-primary" disabled>Agregar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script type="text/javascript">
+
+    $("#nombre").change(function () {
+        var habilitarBoton = true;
+
+        var nombre = $("#nombre").val();
+        $.ajax({
+            url: "existeOrganizacion",
+            data: { "nombre": nombre },
+
+            success: function (retorno) {
+
+                console.log("¿Existe usuario? " + retorno);
+
+                if (retorno == "false") {
+                    $("#divNombreNombre").removeClass(" has-error");
+                    $("#divNombreNombre").addClass(" has-feedback");
+                    $("#divNombreNombre").addClass(" has-success");
+                    $("#spanInputNombre").addClass("glyphicon-ok");
+                    $("#spanInputNombre").removeClass("glyphicon-remove");
+                    $("#mensajeErrorNombre").addClass("hidden");
+                }
+                else {
+
+                    habilitarBoton = false;
+
+                    $("#divNombreNombre").addClass(" has-error");
+                    $("#divNombreNombre").addClass(" has-feedback");
+                    $("#divNombreNombre").removeClass(" has-success");
+                    $("#spanInputNombre").addClass("glyphicon-remove");
+                    $("#spanInputNombre").removeClass("glyphicon-ok");
+                    $("#mensajeErrorNombre").removeClass("hidden");
+                }
+                if (habilitarBoton) {
+                    console.log("habilitando botón");
+                    $("#boton").removeAttr("disabled");
+                }
+                else {
+                    console.log("deshabilitando botón");
+                    $("#boton").attr("disabled", "disabled");
+                }
+            }
+        });
+    });
+
+    $(document).on("keypress", 'form', function (e) {
+        var code = e.keyCode || e.which;
+        if (code == 13) {
+            e.preventDefault();
+            return false;
+        }
+    });
+
+    $(":file").filestyle({
+        buttonText: "Seleccionar imagen..."
+    });
+
+    </script>
+}

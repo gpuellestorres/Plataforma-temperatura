@@ -1,0 +1,84 @@
+﻿@model List<AdminSensoresTemperatura.Models.alertas>
+@{
+    ViewBag.Title = "Administrar alertas no leidas";
+    WebGrid grid = new WebGrid(Model, rowsPerPage: 10);
+}
+<div class="content-wrapper">
+    <div class="content">
+        <div class="header">
+            <h2 class="text-center">Alertas no Leídas del Sistema</h2>
+        </div>
+        <br class="hidden-xs" />
+        <div class="table-responsive">
+            @grid.GetHtml(
+        columns: grid.Columns(
+        grid.Column("polo",
+        header: string.Format("Polo {0}", grid.SortColumn == "id" ? grid.SortDirection == SortDirection.Ascending ? "⇈" : "⇊" : "")),
+
+
+        grid.Column("organizacion_alerta",
+        header: string.Format("Organización {0}", grid.SortColumn == "" ? grid.SortDirection == SortDirection.Ascending ? "⇈" : "⇊" : "")),
+
+        grid.Column("molino",
+        header: string.Format("Molino {0}", grid.SortColumn == "" ? grid.SortDirection == SortDirection.Ascending ? "⇈" : "⇊" : "")),
+
+        grid.Column("fecha",
+        header: string.Format("Fecha {0}", grid.SortColumn == "" ? grid.SortDirection == SortDirection.Ascending ? "⇈" : "⇊" : "")),
+
+        grid.Column("tipo_alerta",
+        header: string.Format("Tipo Alarma {0}", grid.SortColumn == "" ? grid.SortDirection == SortDirection.Ascending ? "⇈" : "⇊" : "")),
+
+        grid.Column("temperatura",
+        header: string.Format("Temperatura registrada {0}", grid.SortColumn == "" ? grid.SortDirection == SortDirection.Ascending ? "⇈" : "⇊" : "")),
+
+        grid.Column("",
+            header: "",
+            format: @<text>
+                <a href="#" data-toggle="modal" data-target="#myModal" onclick="funcionMarcar('@item.polo','@item.molino')" title="Marcar como Leida"><i class='glyphicon glyphicon-check'></i></a>
+            </text>)
+
+         ), tableStyle: "table table-hover", footerStyle: "pagination")
+
+        </div>
+        <!-- Modal -->
+        <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                        <h4 class="modal-title" id="myModalLabel">Marcar Alerta</h4>
+                    </div>
+                    <div class="modal-body">
+                        <h5 class="text-center" id="text-modal"></h5>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal"><i class="glyphicon glyphicon-remove"></i>Cancelar</button>
+                        <a href="" type="button" id="btn_delete" class="btn btn-primary"><i class="glyphicon glyphicon-ok"></i>Si</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>    
+</div>
+
+@section scripts{
+    <script type="text/javascript">
+
+        function funcionMarcar(polo, molino) {
+            $("#text-modal").html("");
+            var cadena = "@Url.Action("Marcar", "Alertas", new { polo = "POLO" , molino ="MOLINO"})";
+            cadena = cadena.replace("POLO", polo);
+            cadena = cadena.replace("MOLINO", molino);
+            cadena = cadena.replace("&amp;", "&");
+
+            console.log(cadena);
+
+            $("#btn_delete").attr("href", cadena);
+            $("#text-modal").append("¿Estás seguro de que deseas dejar marcado el estado de la alerta como 'leído'?");
+
+        }
+
+    </script>
+}
+

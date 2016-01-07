@@ -1,0 +1,549 @@
+﻿@model List<object>
+@{
+    ViewBag.Title = "Gráfico de Molino";
+}
+<div class="content-wrapper" style="background-color:#000000; padding-left:0px; padding-right:0px !important">
+    <div class="content">
+        @*<div id="morrisChart" ></div>*@
+        <div id="chartdiv" style="width: 100%; height: 800px;"></div>
+        <div class="clearfix"></div>
+    </div>
+    <div class="modal-footer" style="background-color:#ecf0f5 !important">
+        <div>
+            <a href="#spanActualizar" class="btn btn-primary"><span class="glyphicon glyphicon-play" id="spanActualizar"></span><t id="botonActualizar"> Actualizar Datos</t></a>
+            <a href="@Url.Action("graficoMolinoAlternativa", "Graficos", new { nombreMolino = @ViewBag.Molino })" class="btn btn-primary"><i class="glyphicon glyphicon-screenshot"></i> Ver como Gráfico Polar</a>
+            <a href="#" data-toggle="modal" data-target="#myModal" class="btn btn-primary"><span class="glyphicon glyphicon-calendar" aria-hidden="true"></span> Periodo de tiempo personalizado</a>
+        </div>
+        <div class="clearfix"></div>
+        <br />
+        <div>
+            <form role="form">
+                <div class="col-xs-4">
+                    <label>Filtrar por temperatura:</label>
+                </div>
+                <div class="clearfix"></div>
+                <div class="col-xs-9">
+                    <div class="form-group">
+                        <input class="form-control" type="number" id="temperatura">
+                    </div>
+                </div>
+                <div class="col-xs-3">
+                    <div class="form-group">
+                        <a href="#" id="botonFiltro" class="btn btn-lg btn-primary btn-block" disabled>Aplicar filtro</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+        <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                        <h4 class="modal-title" id="text-cabezera">Seleccione un periodo en el cual obtener datos</h4>
+                    </div>
+                    <div class="modal-body">
+                        <label>Fecha de Inicio:</label>
+                        <div id="cuerpo_fecha_inicio">
+                            <input type='text' class='form-control' name='fecha_inicio' id='fecha_inicio' placeholder='DD/MM/YYYY' pattern='[0-9][0-9]/[0-9][0-9]/[0-9][0-9][0-9][0-9]' required>
+                        </div>
+                        <label>Hora de Inicio:</label>
+                        <div id="cuerpo_fecha_inicio">
+                            <input type='text' class='form-control' name='hora_inicio' id='hora_inicio'
+                                   data-date-format="hh:mm A" pattern="\d{1,2}[:]\d{1,2}[ ][A,P][M]"
+                                   placeholder="HH:MM" required>
+                        </div>
+                        <br />
+                        <label>Fecha de Termino:</label>
+                        <div id="cuerpo_fecha_fin">
+                            <input type='text' class='form-control' name='fecha_fin' id='fecha_fin' placeholder='DD/MM/YYYY' pattern='[0-9][0-9]/[0-9][0-9]/[0-9][0-9][0-9][0-9]' required>
+                        </div>
+                        <label>Hora de Termino:</label>
+                        <div id="cuerpo_fecha_fin">
+                            <input type='text' class='form-control' name='hora_fin' id='hora_fin'
+                                   data-date-format="hh:mm A" pattern="\d{1,2}[:]\d{1,2}[ ][A,P][M]"
+                                   placeholder="HH:MM" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal"><i class="glyphicon glyphicon-remove"></i>Cancelar</button>
+                        <a href="#" type="button" id="botonFiltroFechas" class="btn btn-primary" disabled><i class="glyphicon glyphicon-ok"></i>Aplicar Filtro</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+</div>    
+    @section Scripts{
+
+        <script type="text/javascript">
+
+    function verificarCampos()
+    {
+        var valor = $("#fecha_inicio").val();
+        var valor2 = $("#fecha_fin").val();
+        var valor3 = $("#hora_inicio").val();
+        var valor4 = $("#hora_fin").val();
+
+        if (valor != "" & valor2 != "" & valor3 != "" & valor4 != "") {
+            $("#botonFiltroFechas").removeAttr("disabled");
+        }
+        else {
+            $("#botonFiltroFechas").attr("disabled", "disabled");
+        }
+    }
+
+    $("#fecha_inicio").focus(function () {
+        verificarCampos();
+    });
+
+    $("#fecha_fin").focus(function () {
+        verificarCampos();
+    });
+
+    $("#hora_inicio").focus(function () {
+        verificarCampos();
+    });
+
+    $("#hora_fin").focus(function () {
+        verificarCampos();
+    });
+
+    $("#fecha_inicio").click(function () {
+        verificarCampos();
+    });
+
+    $("#fecha_fin").click(function () {
+        verificarCampos();
+    });
+
+    $("#hora_inicio").click(function () {
+        verificarCampos();
+    });
+
+    $("#hora_fin").click(function () {
+        verificarCampos();
+    });
+
+    $("#temperatura").change(function(){
+        if($("#temperatura").val()!="" && parseInt($("#temperatura").val())>0){
+            $("#botonFiltro").removeAttr("disabled","disabled");
+        }
+        else
+        {
+            $("#botonFiltro").attr("disabled",true);
+        }
+    });
+
+    $("#fecha_inicio").datetimepicker({
+        viewMode: 'days',
+        format: 'DD/MM/YYYY'
+    });
+
+    $("#fecha_fin").datetimepicker({
+        viewMode: 'days',
+        format: 'DD/MM/YYYY'
+    });
+
+    $("#hora_inicio").datetimepicker({
+        format: 'hh/mm'
+    });
+
+    $("#hora_fin").datetimepicker({
+        format: 'hh/mm'
+    });
+
+    $("#botonFiltroFechas").click(function(){
+        var fecha_inicio = $("#fecha_inicio").val();
+        var hora_inicio = $("#hora_inicio").val();
+        var fecha_fin = $("#fecha_fin").val();
+        var hora_fin = $("#hora_fin").val();
+
+        Inicio = fecha_inicio + " " + hora_inicio;
+        Fin = fecha_fin + " " + hora_fin;
+
+        ruta="@Url.Action("GraficoMolinoPeriodo", "Graficos", new { nombreMolino = @ViewBag.Molino, inicio = "INICIO", fin = "FIN" })";
+        ruta=ruta.replace("INICIO", encodeURIComponent(Inicio));
+        ruta=ruta.replace("FIN", encodeURIComponent(Fin));
+        ruta=ruta.replace("&amp;", "&");
+        ruta=ruta.replace("&amp;", "&");
+
+        console.log(ruta);
+
+        window.location=ruta;
+    });
+
+    $("#botonFiltro").click(function(){
+        temp=$("#temperatura").val();
+        @if (ViewBag.periodo == null)
+                {
+                    <text>
+        ruta="@Url.Action("GraficoMolinoLineaTemp", "Graficos", new { temperatura = "TEMP", nombreMolino = @ViewBag.Molino })";
+        </text>
+                }
+        else
+                {
+                    <text>
+        ruta="@Url.Action("GraficoMolinoLineaTempPeriodo", "Graficos", new { temperatura = "TEMP", nombreMolino = @ViewBag.Molino, inicio = @ViewBag.Inicio, fin = @ViewBag.Fin })";
+        </text>
+                }
+        ruta=ruta.replace("TEMP", temp);
+        ruta=ruta.replace("&amp;", "&");
+        ruta=ruta.replace("&amp;", "&");
+        ruta=ruta.replace("&amp;", "&");
+        ruta=ruta.replace("&amp;", "&");
+
+        console.log(ruta);
+
+        window.location=ruta;
+    });
+
+    $("#tipoGrafico").change(function(){
+        if($("#tipoGrafico").val()=="todos")
+        {
+            window.location="@Url.Action("GraficoMolinoLinea", "Graficos", new { nombreMolino = @ViewBag.Molino })";
+        }
+        else if($("#tipoGrafico").val()=="rojo")
+        {
+            direccion="@Url.Action("GraficoMolinoLineaAlt", "Graficos", new { nombreMolino = @ViewBag.Molino, alerta="rojo" })";
+            direccion=direccion.replace("&amp;", "&");
+            window.location=direccion;
+        }
+        else if($("#tipoGrafico").val()=="amarillo")
+        {
+            direccion="@Url.Action("GraficoMolinoLineaAlt", "Graficos", new { nombreMolino = @ViewBag.Molino, alerta="amarillo" })";
+            direccion=direccion.replace("&amp;", "&");
+            window.location=direccion;
+        }
+        else if($("#tipoGrafico").val()=="sinAlerta")
+        {
+            direccion="@Url.Action("GraficoMolinoLineaAlt", "Graficos", new { nombreMolino = @ViewBag.Molino, alerta = "sinAlerta" })";
+            direccion=direccion.replace("&amp;", "&");
+            window.location=direccion;
+        }
+    });
+</script>
+
+    <script src="/Scripts/amcharts/amcharts.js" type="text/javascript"></script>
+    <script src="/admin/dist/js/export.js" type="text/javascript"></script>
+    <link href="/admin/dist/css/export.css" rel="stylesheet" type="text/css">
+        <script src="~/Scripts/amcharts/serial.js" type="text/javascript"></script>
+        <script src="~/Scripts/amcharts/themes/dark.js" type="text/javascript"></script>
+        <script src="~/Scripts/amcharts/themes/light.js" type="text/javascript"></script>
+        <script type="text/javascript">
+    var chart;
+    var chartData = [];
+
+
+    AmCharts.theme = AmCharts.themes.dark;
+    AmCharts.ready(function () {
+        // generate some random data first
+        generateChartData();
+
+        // SERIAL CHART
+        chart = new AmCharts.AmSerialChart();
+        chart.pathToImages = "/Images/images/";
+        chart.dataProvider = chartData;
+        chart.categoryField = "date";
+        chart.mouseWheelZoomEnabled = true;
+
+        // AXES
+        // category
+        var categoryAxis = chart.categoryAxis;
+        categoryAxis.parseDates = true; // as our data is date-based, we set parseDates to true
+        categoryAxis.minPeriod = "ss"; // our data is daily, so we set minPeriod to DD
+        categoryAxis.minorGridEnabled = true;
+        categoryAxis.axisColor = "#DADADA";
+        categoryAxis.twoLineMode = true;
+        categoryAxis.dateFormats = [{
+            period: 'fff',
+            format: 'JJ:NN:SS'
+        }, {
+            period: 'ss',
+            format: 'JJ:NN:SS'
+        }, {
+            period: 'mm',
+            format: 'JJ:NN'
+        }, {
+            period: 'hh',
+            format: 'JJ:NN'
+        }, {
+            period: 'DD',
+            format: 'DD'
+        }, {
+            period: 'WW',
+            format: 'DD'
+        }, {
+            period: 'MM',
+            format: 'MMM'
+        }, {
+            period: 'YYYY',
+            format: 'YYYY'
+        }];
+
+        @*var valueAxis@(i) = new AmCharts.ValueAxis();
+        valueAxis@(i).axisColor = AmCharts.randomColor;
+        valueAxis@(i).axisThickness = 2;
+        valueAxis@(i).gridAlpha = 0;
+        valueAxis@(i).minimum = 10;
+        valueAxis@(i).maximum = 70;
+        chart.addValueAxis(valueAxis@(i));*@
+
+        var valueAxis1 = new AmCharts.ValueAxis();
+        valueAxis1.axisColor = AmCharts.randomColor;
+        valueAxis1.axisThickness = 2;
+        valueAxis1.gridAlpha = 0;
+        chart.addValueAxis(valueAxis1);
+
+        @{
+            List<string> yKeys = (List<string>)ViewBag.yKeys;
+            for (int i = 0; i < yKeys.Count; i++)
+            {
+                <text>
+
+        var graph@(i) = new AmCharts.AmGraph();
+        //graph@(i).valueAxis = valueAxis@(i); // we have to indicate which value axis should be used
+        graph@(i).valueAxis = valueAxis1; // we have to indicate which value axis should be used
+        graph@(i).title = "Polo @(yKeys[i]):";
+        graph@(i).valueField = "Temperatura_Polo_@(yKeys[i])";
+        graph@(i).bullet = "round";
+        graph@(i).hideBulletsCount = 30;
+        graph@(i).bulletBorderThickness = 1;
+        chart.addGraph(graph@(i));
+        </text>
+                }
+            }
+
+        // CURSOR
+        var chartCursor = new AmCharts.ChartCursor();
+        chartCursor.cursorAlpha = 0.1;
+        chartCursor.fullWidth = true;
+        chart.addChartCursor(chartCursor);
+
+        // SCROLLBAR
+        var chartScrollbar = new AmCharts.ChartScrollbar();
+        chartScrollbar.scrollbarHeight = 40;
+        chart.addChartScrollbar(chartScrollbar);
+
+        // LEGEND
+        var legend = new AmCharts.AmLegend();
+        legend.marginLeft = 110;
+        legend.useGraphSettings = true;
+        chart.addLegend(legend);
+        @if (ViewBag.periodo == null)
+        {
+            <text>
+        chart.addTitle('Últimos Diez Minutos para molino "@ViewBag.Molino"');
+        </text>
+        }
+        else
+        {
+            <text>
+        chart.addTitle('Datos de tiempo personalizado del molino "@ViewBag.Molino"');
+        </text>
+        }
+
+        chart.export = [];
+        chart.export.enabled=true;
+        chart.libs = [];
+        chart.libs.pathToImages="/admin/dist/libs/";
+
+        // WRITE
+        chart.write("chartdiv");
+    });
+
+    // generate some random data, quite different range
+    function generateChartData() {
+        @{
+            bool agregarDatos = false;
+            List<string> polosActuales = new List<string>();
+          }
+        @foreach (object dato in Model){
+            if (dato.GetType().Equals(typeof(DateTime))){
+
+                if (agregarDatos) {
+                    <text>
+        chartData.push({
+            date: newDate,
+            </text>
+
+                    for (int i = 0; i < polosActuales.Count; i++) {
+                    <text>Temperatura_Polo_@(polosActuales[i]): valor@(polosActuales[i])</text>
+                    if(i<polosActuales.Count-1){
+                        <text>,</text>
+                    }
+                    }
+                    <text>});</text>
+                }
+
+                polosActuales = new List<string>();
+
+                string año = ((DateTime)dato).Year + "";
+                string mes = ((DateTime)dato).Month + "";
+                string dia = ((DateTime)dato).Day + "";
+                string hora = ((DateTime)dato).Hour + "";
+                string minuto = ((DateTime)dato).Minute + "";
+                string segundo = ((DateTime)dato).Second + "";
+                string milisegundo = ((DateTime)dato).Millisecond+ "";
+                agregarDatos = true;
+
+                <text>
+        var newDate = new Date(@año, @mes, @dia, @hora, @minuto, @segundo, @milisegundo);
+        </text>
+            }
+            else {
+                string temperatura = (((AdminSensoresTemperatura.Models.lecturas)dato).temperatura.ToString().Replace(",", "."));
+                if (temperatura.Length > 6){
+                    temperatura = temperatura.Substring(0, 6);
+                }
+            <text>
+        var valor@(((AdminSensoresTemperatura.Models.lecturas)dato).numeroPolo) = @temperatura;
+        </text>
+
+                polosActuales.Add(((AdminSensoresTemperatura.Models.lecturas)dato).numeroPolo + "");
+            }
+        }
+
+        @if (agregarDatos) {
+            <text>
+        chartData.push({
+            date: newDate,
+            </text>
+
+            for (int i = 0; i < polosActuales.Count; i++) {
+                <text>Temperatura_Polo_@(polosActuales[i]): valor@(polosActuales[i])</text>
+                if(i<polosActuales.Count-1){
+                    <text>,</text>
+                }
+            }
+            <text>});</text>
+    }
+    }
+
+    @if (ViewBag.periodo == null)
+    {
+        <text>
+    actualizarGrafico=true;
+    $("#spanActualizar").removeClass("glyphicon-play");
+    $("#spanActualizar").addClass("glyphicon-stop");
+    $("#botonActualizar").text(' Detener Actualización de Datos');
+
+    tiempoComenzarActualizar=0;
+
+    </text>
+    }
+    else
+    {
+        <text>
+    actualizarGrafico=false;
+    $("#spanActualizar").removeClass("glyphicon-stop");
+    $("#spanActualizar").addClass("glyphicon-play");
+    $("#botonActualizar").text(' Actualizar Datos');
+    tiempoComenzarActualizar=300;//Se comienza a actualizar en 300 segundos
+    </text>
+    }
+
+    $("#botonActualizar").click(function(){
+        if(actualizarGrafico)
+        {
+            dejarActualizar();
+        }
+        else
+        {
+            comenzarActualizar();
+        }
+    });
+
+    function comenzarActualizar()
+    {
+        while(!actualizarGrafico)
+        {
+            actualizarGrafico=true;
+            $("#spanActualizar").removeClass("glyphicon-play");
+            $("#spanActualizar").addClass("glyphicon-stop");
+            $("#botonActualizar").text(' Detener Actualización de Datos');
+
+            tiempoComenzarActualizar=0;
+        }
+    }
+
+    function dejarActualizar()
+    {
+        while(actualizarGrafico)
+        {
+            actualizarGrafico=false;
+            $("#spanActualizar").removeClass("glyphicon-stop");
+            $("#spanActualizar").addClass("glyphicon-play");
+            $("#botonActualizar").text(' Actualizar Datos');
+            tiempoComenzarActualizar=300;//Se comienza a actualizar en 300 segundos
+        }
+    }
+
+    setInterval(function () {
+        console.log("Tiempo: " + tiempoComenzarActualizar);
+        if(tiempoComenzarActualizar<=0)
+        {
+            if(!actualizarGrafico)
+            {
+                comenzarActualizar();
+            }
+        }
+        else
+        {
+            tiempoComenzarActualizar-=10;
+            if(tiempoComenzarActualizar<-10)tiempoComenzarActualizar=-10;
+        }
+    }, 10000);
+
+
+    // set up the chart to update every second
+    setInterval(function () {
+        if(actualizarGrafico)
+        {
+            $.ajax({
+                @{
+                        string url = Url.Action("ultimosValoresGraficoMolinoLinea", "Graficos");
+                    }
+                url: "@url",
+                data: { "molino": "@ViewBag.Molino" },
+
+                success: function (retorno) {
+
+                    if(chart.dataProvider.length>40){
+                        chart.dataProvider.shift();
+                    }
+
+                    console.log("Cantidad mediciones: " + chart.dataProvider.length);
+
+                    var arr = retorno.split(';');
+
+                    var fecha= new Date(arr[0].split(",")[0], arr[0].split(",")[1], arr[0].split(",")[2],
+                        arr[0].split(",")[3], arr[0].split(",")[4], arr[0].split(",")[5], arr[0].split(",")[6]);
+
+                    chart.dataProvider.push({
+                        date: fecha,
+                        @for (int i = 0; i < yKeys.Count; i++)
+                                {
+                                    <text>Temperatura_Polo_@(yKeys[i]): arr[@(i+1)].split(",")[1]</text>
+                                    if (i < yKeys.Count - 1)
+                                    {
+                                        <text>,</text>
+                                    }
+                                }
+                    });
+
+                    chart.validateData();
+                }
+
+            });
+        }
+    }, 4000);
+
+    $(document).ready(function() {
+        $('html,body').animate({
+            scrollTop: $("#chartdiv").offset().top},
+        'slow');
+    });
+</script>
+        
+    }

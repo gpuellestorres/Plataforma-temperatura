@@ -1,0 +1,110 @@
+﻿@model AdminSensoresTemperatura.Models.usuarios
+@{
+    ViewBag.Title = "Login";
+}
+
+<div class="content-wrapper">
+    <div class="content">
+        <br class="xs-hidden">
+        <br class="xs-hidden">
+        <br class="xs-hidden">
+        <div class="row">
+            @if (ViewBag.error != null && ViewBag.error == "contraseñaIncorrecta")
+            {
+                <div class="col-md-12">
+                    <div class="alert alert-danger alert-dismissable">
+                        <button type="button" class="close" data-dismiss="alert"
+                                aria-hidden="true">
+                            &times;
+                        </button>
+                        Error: el password actual ingresado es incorrecto
+                    </div>
+                </div>
+                <div class="clear-fix"></div>
+            }
+            <div class="col-md-4 col-md-offset-4">
+                <div class="login-panel panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Cambiar Contraseña</h3>
+                    </div>
+                    <div class="panel-body">
+                        <form role="form" method="post" action="@Url.Action("metodoCambioPassword", "Home")" enctype="multipart/form-data">
+                            <input type="text" name="nombreUsuario" value="@Model.nombreUsuario" hidden />
+                            <div class="form-group">
+                                <input class="form-control" placeholder="Password actual" name="passwordActual" type="password" autofocus required>
+                            </div>
+                            <div class="form-group">
+                                <input class="form-control" placeholder="Nuevo password" name="passwordNuevo" id="passwordNuevo" type="password" value="" required>
+                            </div>
+                            <div class="form-group">
+                                <div id="divNombre" class="form-group">
+                                    <input class="form-control" placeholder="Repita el nuevo password"
+                                           name="passwordNuevo2" id="passwordNuevo2" type="password" value="" required>
+                                    <span id="spanInput" class="glyphicon form-control-feedback"></span>
+                                    <div id="mensajeError" class="alert alert-danger hidden">
+                                        <strong>Error: </strong> el nuevo password no coincide con su repetición
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Change this to a button or input when using this as a form -->
+                            <button type="submit" id="boton" class="btn btn-lg btn-success btn-block" disabled>Cambiar contraseña</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+<script type="text/javascript">
+    $("#passwordNuevo").change(function () {
+        verificarContraseñas();            
+    });
+
+    $("#passwordNuevo2").change(function () {
+        verificarContraseñas();
+    });
+
+    function verificarContraseñas()
+    {
+        console.log("aqui");
+        var nueva = $("#passwordNuevo").val();
+        var nueva2 = $("#passwordNuevo2").val();
+
+        if (nueva == "" || nueva2 == "")
+        {
+            $("#boton").attr("disabled", "disabled");
+            return;
+        }
+
+        if (nueva == nueva2) {
+            $("#boton").removeAttr("disabled");
+            $("#divNombre").removeClass(" has-error");
+            $("#divNombre").addClass(" has-feedback");
+            $("#divNombre").addClass(" has-success");
+            $("#spanInput").addClass("glyphicon-ok");
+            $("#spanInput").removeClass("glyphicon-remove");
+            $("#mensajeError").addClass("hidden");
+        }
+        else 
+        {
+            $("#boton").attr("disabled", "disabled");
+            $("#divNombre").addClass(" has-error");
+            $("#divNombre").addClass(" has-feedback");
+            $("#divNombre").removeClass(" has-success");
+            $("#spanInput").addClass("glyphicon-remove");
+            $("#spanInput").removeClass("glyphicon-ok");
+            $("#mensajeError").removeClass("hidden");
+        }
+    }
+
+    $(document).on("keypress", 'form', function (e) {
+        var code = e.keyCode || e.which;
+        if (code == 13) {
+            e.preventDefault();
+            return false;
+        }
+    });
+    </script>
+}

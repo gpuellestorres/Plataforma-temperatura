@@ -1,0 +1,26 @@
+﻿@model List<AdminSensoresTemperatura.Models.molinos>
+@{
+    ViewBag.Title = "Molinos Con Problemas";
+    WebGrid grid = new WebGrid(Model, rowsPerPage: 10);
+}
+<div class="content-wrapper">
+    <br />
+    <div class="page-header">
+        <h2 class="text-center">Los siguientes molinos no han recibido datos hace más de diez minutos</h2>
+    </div>
+
+    <div class="content">
+        <div class="table-responsive">
+            @grid.GetHtml(
+        columns: grid.Columns(
+        grid.Column("nombre",
+        header: string.Format("Nombre {0}", grid.SortColumn == "id" ? grid.SortDirection == SortDirection.Ascending ? "⇈" : "⇊" : "")),
+        
+        grid.Column("planta",
+        header: string.Format("Planta a la que pertenece {0}", grid.SortColumn == "" ? grid.SortDirection == SortDirection.Ascending ? "⇈" : "⇊" : ""))
+                  ), tableStyle: "table table-hover table-bordered table-striped", footerStyle: "pagination")
+        </div>
+    </div>
+</div> <!-- /container -->
+
+

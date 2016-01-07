@@ -1,0 +1,53 @@
+﻿@model List<AdminSensoresTemperatura.Models.alertas>
+@{
+    ViewBag.Title = "Administrar alertas no leidas";
+    WebGrid grid = new WebGrid(Model, rowsPerPage: 10);
+}
+<div class="content-wrapper">
+    <div class="content">
+        <div class="header">            
+            <h2 class="text-center">Historial de Alertas del Sistema</h2>
+        </div>
+        <br class="hidden-xs" />
+        <div class="table-responsive">
+            @grid.GetHtml(
+        columns: grid.Columns(
+        grid.Column("polo",
+        header: string.Format("Polo {0}", grid.SortColumn == "id" ? grid.SortDirection == SortDirection.Ascending ? "⇈" : "⇊" : "")),
+
+
+        grid.Column("organizacion_alerta",
+        header: string.Format("Organización {0}", grid.SortColumn == "" ? grid.SortDirection == SortDirection.Ascending ? "⇈" : "⇊" : "")),
+
+        grid.Column("molino",
+        header: string.Format("Molino {0}", grid.SortColumn == "" ? grid.SortDirection == SortDirection.Ascending ? "⇈" : "⇊" : "")),
+
+        grid.Column("fecha",
+        header: string.Format("Fecha {0}", grid.SortColumn == "" ? grid.SortDirection == SortDirection.Ascending ? "⇈" : "⇊" : "")),
+
+        grid.Column("nombre_usuario",
+        header: string.Format("Usuario que marcó alerta como leída {0}", grid.SortColumn == "" ? grid.SortDirection == SortDirection.Ascending ? "⇈" : "⇊" : "")),
+
+        grid.Column("leido",
+        header: string.Format("Estado alarma {0}", grid.SortColumn == "" ? grid.SortDirection == SortDirection.Ascending ? "⇈" : "⇊" : "")),
+
+        grid.Column("tipo_alerta",
+        header: string.Format("Tipo Alarma {0}", grid.SortColumn == "" ? grid.SortDirection == SortDirection.Ascending ? "⇈" : "⇊" : "")),
+
+        grid.Column("temperatura",
+        header: string.Format("Temperatura registrada {0}", grid.SortColumn == "" ? grid.SortDirection == SortDirection.Ascending ? "⇈" : "⇊" : "")),
+
+        grid.Column("",
+            header: "",
+            format: @<text>
+
+            </text>)
+                                                                    ), tableStyle: "table table-hover", footerStyle: "pagination")
+
+
+        </div>
+    </div>
+</div>
+
+
+
